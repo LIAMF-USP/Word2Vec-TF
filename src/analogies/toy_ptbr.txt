@@ -1,0 +1,14 @@
+: capital-common-countries
+Atenas Grécia Bagdá Iraque
+: capital-world
+Abuja Nigéria Acra Gana
+: currency
+Argélia dinar Angola kwanza
+: city-in-state
+Chicago Ilinóis Houston Texas
+: gram1-adjective-to-adverb
+fantástico fantasticamente aparente aparentemente
+: family
+irmão irmã ele ela
+: gram3-comparative
+mau pior grande maior
