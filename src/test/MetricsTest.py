@@ -9,7 +9,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
 from utils import run_test, load_embeddings
-from eval.metrics import analogy, score
+from eval.metrics import analogy, analogy_score, compare_models
 
 
 class MetricsTest(unittest.TestCase):
@@ -18,9 +18,15 @@ class MetricsTest(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        cls.filename = os.path.join(parentdir, 'pickles', "toy.pickle")
-        cls.embeddings, cls.word2index = load_embeddings(cls.filename)
-        cls.analogy_path = os.path.join(parentdir, 'analogies', "toy_ptbr.txt")
+        cls.toy_pickle1 = os.path.join(parentdir, 'pickles', "toy1.pickle")
+        cls.toy_pickle2 = os.path.join(parentdir, 'pickles', "toy2.pickle")
+        cls.embeddings, cls.word2index = load_embeddings(cls.toy_pickle1)
+        cls.toy_analogy_path = os.path.join(parentdir,
+                                            'analogies',
+                                            "toy_ptbr.txt")
+        cls.analogy_path = os.path.join(parentdir,
+                                        'analogies',
+                                        "questions-words-ptbr.txt")
 
     def test_analogy(self):
         """
@@ -35,18 +41,31 @@ class MetricsTest(unittest.TestCase):
         self.assertEqual(similar_words[0], "ela",
                          msg="\nsimilar_words= \n {}".format(similar_words))
 
-    def test_score(self):
+    def test_analogy_score(self):
         """
         Function to test if all the sentences that are
         being generated are valid tweets
         """
-        my_score, result_list = score(MetricsTest.word2index,
-                                      MetricsTest.embeddings,
-                                      MetricsTest.analogy_path,
-                                      verbose=False)
-        my_score *= 100
-        self.assertEqual(my_score, 100,
+        score, result_list, _ = analogy_score(MetricsTest.word2index,
+                                              MetricsTest.embeddings,
+                                              MetricsTest.toy_analogy_path,
+                                              verbose=False)
+        score *= 100
+        self.assertEqual(score, 100,
                          msg="\nresults = \n {}".format(result_list))
+
+    def test_compare_models(self):
+        """
+        Comparing two "models". toy1.pickle has a matrix of word embeddings
+        with less words than toy2.pickle.
+        """
+        list_of_pickles = [MetricsTest.toy_pickle1, MetricsTest.toy_pickle2]
+        result, _, _, _, = compare_models(list_of_pickles,
+                                          MetricsTest.analogy_path,
+                                          verbose=False)
+        self.assertEqual(result,
+                         MetricsTest.toy_pickle2,
+                         msg="\nresults = \n {}".format(result))
 
 if __name__ == "__main__":
     run_test(MetricsTest,

@@ -2,6 +2,7 @@ import pickle
 import heapq
 import sys
 import numpy as np
+from utils import load_embeddings
 
 
 def analogy(word1, word2, word3, word2index, embeddings):
@@ -43,11 +44,11 @@ def analogy(word1, word2, word3, word2index, embeddings):
     return results
 
 
-def score(word2index,
-          embeddings,
-          eval_path,
-          verbose=True,
-          raw=False):
+def analogy_score(word2index,
+                  embeddings,
+                  eval_path,
+                  verbose=True,
+                  raw=False):
     """
     Function to calculate the score of the embeddings given one
     txt file of analogies "eval_path". A valid line is a line of the txt
@@ -64,6 +65,7 @@ def score(word2index,
     :type eval_path:str
     :rtype final_score: float
     :rtype results: list
+    :rtype precision: float
     """
     old_score = 0
     old_total = 0
@@ -131,4 +133,33 @@ def score(word2index,
         print("Every line has at least a word outside the vocabulary")
     else:
         final_score = np.sum(all_cat_scores) / np.sum(all_cat_totals)
-    return final_score, results
+    precision = valid_tests/total_lines
+    return final_score, results, precision
+
+
+def compare_models(list_of_pickle_paths,
+                   eval_path,
+                   verbose=True,
+                   raw=False):
+
+    best_score = 0
+    best_score_precision = 0
+    best_pickle_path = None
+    best_result = None
+    best_precision = 0
+    for pickle_path in list_of_pickle_paths:
+        embeddings, word2index = load_embeddings(pickle_path)
+        score, result, precision = analogy_score(word2index,
+                                                 embeddings,
+                                                 eval_path,
+                                                 verbose=verbose,
+                                                 raw=raw)
+        current_score = score * precision
+        if current_score > best_score_precision:
+            best_score = score
+            best_precision = precision
+            best_score_precision = current_score
+            best_pickle_path = pickle_path
+            best_result = result
+
+    return best_pickle_path, best_score, best_result, best_precision
