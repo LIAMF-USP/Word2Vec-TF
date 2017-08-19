@@ -2,7 +2,8 @@ import pandas as pd
 import heapq
 import sys
 import numpy as np
-from utils import load_embeddings
+import os
+from utils import load_embeddings, get_date_and_time
 
 
 def analogy(word1, word2, word3, word2index, embeddings):
@@ -185,11 +186,31 @@ def compare_models(list_of_model_names,
     return df, results
 
 
-def print_comparison(df, results):
+def save_comparison(df, results, verbose=True):
     """
-    foo
+    Save the model comparison in a txt file.
 
     :type df: pd DataFrame
     :type results: list of dict
+    :type verbose: boolean
+    :rtype: str
     """
-    pass
+    experiments_path = os.path.join(os.getcwd(), "experiments")
+    if not os.path.exists(experiments_path):
+        os.mkdir("experiments")
+    experiment_name = "experiment_" + get_date_and_time() + ".txt"
+    filename = os.path.join(experiments_path, experiment_name)
+    with open(filename, "w") as file:
+        file.write("===The results are:===\n\n")
+        file.write(df.to_string())
+        best_one = df.nlargest(1, 'Score*Preci')
+        file.write("\n\n===The best model is:===\n\n")
+        file.write(best_one.to_string())
+        file.write("\n")
+        for key in results.keys():
+            file.write("\n\n===Detailed results for {}===\n".format(key))
+            for info in results[key]:
+                file.write("\n" + info)
+    if verbose:
+        print("You can find the saved file in {}".format(filename))
+    return filename

@@ -1,5 +1,5 @@
-# Word2Vec-TF
-Tensorflow inplementation of the model Word2vec
+# word2vec-TF
+Tensorflow inplementation of the word2vec model
 
 [![Build Status](https://travis-ci.org/LIAMF-USP/word2vec-TF.svg?branch=master)](https://travis-ci.org/LIAMF-USP/word2vec-TF)
 

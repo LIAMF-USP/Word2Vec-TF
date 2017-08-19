@@ -3,13 +3,14 @@ import os
 import sys
 import inspect
 import shutil
+import linecache
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
 from utils import run_test, load_embeddings
-from eval.metrics import analogy, analogy_score, compare_models
+from eval.metrics import analogy, analogy_score, compare_models, save_comparison
 
 
 class MetricsTest(unittest.TestCase):
@@ -27,6 +28,18 @@ class MetricsTest(unittest.TestCase):
         cls.analogy_path = os.path.join(parentdir,
                                         'analogies',
                                         "questions-words-ptbr.txt")
+        cls.list_of_names = ["toy1", "toy2"]
+        cls.list_of_pickles = [cls.toy_pickle1, cls.toy_pickle2]
+        cls.df, cls.results = compare_models(cls.list_of_names,
+                                             cls.list_of_pickles,
+                                             cls.analogy_path,
+                                             verbose=False)
+
+    @classmethod
+    def tearDown(cls):
+        experiments_path = os.path.join(currentdir, "experiments")
+        if os.path.exists(experiments_path):
+            shutil.rmtree(experiments_path)
 
     def test_analogy(self):
         """
@@ -61,17 +74,30 @@ class MetricsTest(unittest.TestCase):
         evaluation on these both embeddings, 'toy2' will pass in more
         analogy tests than 'toy1'.
         """
-        list_of_names = ["toy1", "toy2"]
-        list_of_pickles = [MetricsTest.toy_pickle1, MetricsTest.toy_pickle2]
-        df, _ = compare_models(list_of_names,
-                               list_of_pickles,
-                               MetricsTest.analogy_path,
-                               verbose=False)
-        best_one = df.nlargest(1, 'Score*Preci')
+        best_one = MetricsTest.df.nlargest(1, 'Score*Preci')
         result = list(best_one["Model Name"])[0]
         self.assertEqual(result,
                          "toy2",
-                         msg="\ndf = \n {}".format(df.to_string()))
+                         msg="\ndf = \n {}".format(MetricsTest.df.to_string()))
+
+    def test_save_comparison(self):
+        """
+        Comparing two "models". 'toy1.pickle' has a matrix of word embeddings
+        with less words than 'toy2.pickle'. So when we apply the analogy
+        evaluation on these both embeddings, 'toy2' will pass in more
+        analogy tests than 'toy1'.
+        """
+        filename = save_comparison(MetricsTest.df,
+                                   MetricsTest.results,
+                                   verbose=False)
+        self.assertEqual(linecache.getline(filename, 7),
+                         '===The best model is:===\n')
+        self.assertEqual(linecache.getline(filename, 8),
+                         '\n')
+        self.assertEqual(linecache.getline(filename, 9),
+                         '  Model Name  Precision     Score  Score*Preci\n')
+        self.assertEqual(linecache.getline(filename, 10),
+                         '1       toy2   0.023048  0.297778     0.006863\n')
 
 if __name__ == "__main__":
     run_test(MetricsTest,
