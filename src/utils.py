@@ -1,6 +1,16 @@
 import pickle
-import heapq
+import time
 import unittest
+
+
+def get_date_and_time():
+    """
+    Function to create an unique label
+    using the date and time.
+
+    :rtype: str
+    """
+    return time.strftime('%d-%m-%Y_%H-%M-%S')
 
 
 def run_test(testClass, header):

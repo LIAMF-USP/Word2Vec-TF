@@ -1,4 +1,4 @@
-import pickle
+import pandas as pd
 import heapq
 import sys
 import numpy as np
@@ -58,7 +58,9 @@ def analogy_score(word2index,
     this line will be the position of the fourth word in this list (0 if it is
     not in the list). Since the txt can have different categories this
     function also returns a list 'results' with the different scores
-    per category.
+    per category. And 'precision' is the ratio valid_tests / total_lines; where
+    'valid_tests' is the number of all the lines that could be evaluated by
+    the model, and 'total_lines' is the number of lines from the txt file.
 
     :type word2index: dict
     :type embeddings: np array
@@ -133,33 +135,61 @@ def analogy_score(word2index,
         print("Every line has at least a word outside the vocabulary")
     else:
         final_score = np.sum(all_cat_scores) / np.sum(all_cat_totals)
-    precision = valid_tests/total_lines
+    precision = valid_tests / total_lines
     return final_score, results, precision
 
 
-def compare_models(list_of_pickle_paths,
+def compare_models(list_of_model_names,
+                   list_of_pickle_paths,
                    eval_path,
                    verbose=True,
                    raw=False):
+    """
+    Given a list of model names, a list of pickles and an evaluation file,
+    this function stores all the information given by the function
+    analogy_score in a DataFrame. Here we calculate another metric
+    'Score*Preci' which is the product bethween the score and the precision
+    of a model. The ideia is that a good model has both higher precision
+    (contemplate more words) and  higher score (accuracy in the analogy test)
 
-    best_score = 0
-    best_score_precision = 0
-    best_pickle_path = None
-    best_result = None
-    best_precision = 0
-    for pickle_path in list_of_pickle_paths:
-        embeddings, word2index = load_embeddings(pickle_path)
+    :type list_of_model_names: list
+    :type list_of_pickle_paths: list
+    :type eval_path: str
+    :type verbose: boolean
+    :type raw: boolean
+    :rtype df: pd DataFrame
+    :rtype results: list of dict
+
+    """
+    size_condition = len(list_of_model_names) == len(list_of_pickle_paths)
+    assert size_condition, "model names and pickle paths: diferente sizes"
+    results = []
+    all_observations = []
+    for name, path in zip(list_of_model_names, list_of_pickle_paths):
+        embeddings, word2index = load_embeddings(path)
         score, result, precision = analogy_score(word2index,
                                                  embeddings,
                                                  eval_path,
                                                  verbose=verbose,
                                                  raw=raw)
-        current_score = score * precision
-        if current_score > best_score_precision:
-            best_score = score
-            best_precision = precision
-            best_score_precision = current_score
-            best_pickle_path = pickle_path
-            best_result = result
+        observation = {}
+        observation['Model Name'] = name
+        observation['Score'] = score
+        observation['Precision'] = precision
+        observation['Score*Preci'] = score * precision
+        all_observations.append(observation)
+        results.append(result)
+    df = pd.DataFrame(all_observations)
+    results = {name: result for name, result in zip(list_of_model_names,
+                                                    results)}
+    return df, results
 
-    return best_pickle_path, best_score, best_result, best_precision
+
+def print_comparison(df, results):
+    """
+    foo
+
+    :type df: pd DataFrame
+    :type results: list of dict
+    """
+    pass

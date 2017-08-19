@@ -56,16 +56,22 @@ class MetricsTest(unittest.TestCase):
 
     def test_compare_models(self):
         """
-        Comparing two "models". toy1.pickle has a matrix of word embeddings
-        with less words than toy2.pickle.
+        Comparing two "models". 'toy1.pickle' has a matrix of word embeddings
+        with less words than 'toy2.pickle'. So when we apply the analogy
+        evaluation on these both embeddings, 'toy2' will pass in more
+        analogy tests than 'toy1'.
         """
+        list_of_names = ["toy1", "toy2"]
         list_of_pickles = [MetricsTest.toy_pickle1, MetricsTest.toy_pickle2]
-        result, _, _, _, = compare_models(list_of_pickles,
-                                          MetricsTest.analogy_path,
-                                          verbose=False)
+        df, _ = compare_models(list_of_names,
+                               list_of_pickles,
+                               MetricsTest.analogy_path,
+                               verbose=False)
+        best_one = df.nlargest(1, 'Score*Preci')
+        result = list(best_one["Model Name"])[0]
         self.assertEqual(result,
-                         MetricsTest.toy_pickle2,
-                         msg="\nresults = \n {}".format(result))
+                         "toy2",
+                         msg="\ndf = \n {}".format(df.to_string()))
 
 if __name__ == "__main__":
     run_test(MetricsTest,
