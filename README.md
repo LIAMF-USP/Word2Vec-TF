@@ -8,3 +8,4 @@ Tensorflow inplementation of the word2vec model
 2) reference https://github.com/tensorflow/models/blob/master/tutorials/embedding/word2vec.py
 3) reference https://radimrehurek.com/gensim/models/word2vec.html
 4) reference http://nilc.icmc.usp.br/nilc/index.php/repositorio-de-word-embeddings-do-nilc
+5) reference https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec\_basic.py
