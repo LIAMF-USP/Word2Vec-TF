@@ -1,6 +1,9 @@
 #experiments
 *experiments/
 
+#corpora
+*corpora/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
