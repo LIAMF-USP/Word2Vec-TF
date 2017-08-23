@@ -43,8 +43,8 @@ class MetricsTest(unittest.TestCase):
 
     def test_analogy(self):
         """
-        Function to test if all the sentences that are
-        being generated are valid tweets
+        Function to test if the analogy function can perform
+        a basic analogy
         """
         similar_words = analogy('irmão',
                                 'irmã',
@@ -56,8 +56,7 @@ class MetricsTest(unittest.TestCase):
 
     def test_analogy_score(self):
         """
-        Function to test if all the sentences that are
-        being generated are valid tweets
+        Function to test the analogy_score function
         """
         score, result_list, _ = analogy_score(MetricsTest.word2index,
                                               MetricsTest.embeddings,
@@ -98,6 +97,7 @@ class MetricsTest(unittest.TestCase):
                          '  Model Name  Precision     Score  Score*Preci\n')
         self.assertEqual(linecache.getline(filename, 10),
                          '1       toy2   0.023048  0.297778     0.006863\n')
+
 
 if __name__ == "__main__":
     run_test(MetricsTest,

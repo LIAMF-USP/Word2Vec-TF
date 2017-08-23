@@ -1,9 +1,20 @@
+"""This module does the evaluation of a model using a analogy txt file."""
+
 import pandas as pd
 import heapq
 import sys
 import numpy as np
 import os
-from utils import load_embeddings, get_date_and_time
+
+try:
+    from utils import load_embeddings, get_date_and_time
+except ImportError:
+
+    import inspect
+    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    parentdir = os.path.dirname(currentdir)
+    sys.path.insert(0, parentdir)
+    from utils import load_embeddings, get_date_and_time
 
 
 def analogy(word1, word2, word3, word2index, embeddings):
@@ -28,7 +39,8 @@ def analogy(word1, word2, word3, word2index, embeddings):
     wordvector1 = embeddings[index1]
     wordvector2 = embeddings[index2]
     wordvector3 = embeddings[index3]
-    result_vector = embeddings.dot(wordvector2) - embeddings.dot(wordvector1) + embeddings.dot(wordvector3)
+    diffence_vect = embeddings.dot(wordvector2) - embeddings.dot(wordvector1)
+    result_vector = diffence_vect + embeddings.dot(wordvector3)
 
     all_results = [(v, index)
                    for index, v in enumerate(result_vector)
@@ -180,17 +192,17 @@ def compare_models(list_of_model_names,
         observation['Score*Preci'] = score * precision
         all_observations.append(observation)
         results.append(result)
-    df = pd.DataFrame(all_observations)
+    dataframe = pd.DataFrame(all_observations)
     results = {name: result for name, result in zip(list_of_model_names,
                                                     results)}
-    return df, results
+    return dataframe, results
 
 
-def save_comparison(df, results, verbose=True):
+def save_comparison(dataframe, results, verbose=True):
     """
     Save the model comparison in a txt file.
 
-    :type df: pd DataFrame
+    :type dataframe: pd DataFrame
     :type results: list of dict
     :type verbose: boolean
     :rtype: str
@@ -202,8 +214,8 @@ def save_comparison(df, results, verbose=True):
     filename = os.path.join(experiments_path, experiment_name)
     with open(filename, "w") as file:
         file.write("===The results are:===\n\n")
-        file.write(df.to_string())
-        best_one = df.nlargest(1, 'Score*Preci')
+        file.write(dataframe.to_string())
+        best_one = dataframe.nlargest(1, 'Score*Preci')
         file.write("\n\n===The best model is:===\n\n")
         file.write(best_one.to_string())
         file.write("\n")
