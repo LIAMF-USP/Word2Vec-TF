@@ -4,7 +4,7 @@
 import os
 import sys
 import inspect
-from MetricsTest import MetricsTest
+from EvalTest import EvalTest
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -15,8 +15,8 @@ from utils import run_test
 
 
 def main():
-    run_test(MetricsTest,
-             "\n=== Running tests for metric functions ===\n")
+    run_test(EvalTest,
+             "\n=== Running tests the eval module ===\n")
 
 if __name__ == "__main__":
     main()
