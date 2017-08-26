@@ -12,7 +12,7 @@ sys.path.insert(0, parentdir)
 from utils import run_test, load_embeddings
 from eval.metrics import analogy, naive_analogy_score
 from eval.Evaluator import Evaluator
-# from eval.ModelComparison import ModelComparison
+from eval.ModelComparison import ModelComparison
 
 
 class EvalTest(unittest.TestCase):
@@ -107,18 +107,21 @@ class EvalTest(unittest.TestCase):
         #                                      cls.list_of_pickles,
         #                                      cls.analogy_path,
         #                                      verbose=False)
-    # def test_compare_models(self):
-    #     """
-    #     Comparing two "models". 'toy1.pickle' has a matrix of word embeddings
-    #     with less words than 'toy2.pickle'. So when we apply the analogy
-    #     evaluation on these both embeddings, 'toy2' will pass in more
-    #     analogy tests than 'toy1'.
-    #     """
-    #     best_one = EvalTest.df.nlargest(1, 'Score*Preci')
-    #     result = list(best_one["Model Name"])[0]
-    #     self.assertEqual(result,
-    #                      "toy2",
-    #                      msg="\ndf = \n {}".format(EvalTest.df.to_string()))
+    def test_compare_models(self):
+        """
+        Comparing two "models". 'toy1.pickle' has a matrix of word embeddings
+        with less words than 'toy2.pickle'. So when we apply the analogy
+        evaluation on these both embeddings, 'toy2' will pass in more
+        analogy tests than 'toy1'.
+        """
+        ModelComparison(EvalTest.list_of_names,
+                        EvalTest.list_of_pickles,
+                        EvalTest.pt_analogy_path)
+        # best_one = EvalTest.df.nlargest(1, 'Score*Preci')
+        # result = list(best_one["Model Name"])[0]
+        # self.assertEqual(result,
+        #                  "toy2",
+        #                  msg="\ndf = \n {}".format(EvalTest.df.to_string()))
 
     # def test_save_comparison(self):
     #     """

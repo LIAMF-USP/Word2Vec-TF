@@ -79,8 +79,8 @@ class Evaluator:
         Since the indices of words a and b appear in the top_k matrix
         we need to take a matrix of size k+2.
         """
-        self.graph = tf.Graph()
-        with self.graph.as_default():
+        graph = tf.Graph()
+        with graph.as_default():
             normalized_emb = tf.nn.l2_normalize(self.embeddings, 1)
             a_emb = tf.gather(normalized_emb,
                               self.analogy_questions.T[0])
@@ -95,7 +95,7 @@ class Evaluator:
                              normalized_emb,
                              transpose_b=True)
             _, pred_idx = tf.nn.top_k(dist, self.top_results + 2)
-        with tf.Session(graph=self.graph) as sess:
+        with tf.Session(graph=graph) as sess:
             self.top_k = sess.run(pred_idx)
 
     def _build_clean_top_k(self):
@@ -122,7 +122,7 @@ class Evaluator:
 
             precision: questions not skipped / total number of questions
 
-            raw_score: number of times we got a exaxt result
+            raw_score: number of times we got a exact result
                        / number of valid questions
 
             score: sum(position of the word d in the inverse top k answer)
@@ -133,7 +133,7 @@ class Evaluator:
         from (c + b - a) using numbers from [0,10] such that
         10 is the maximum point (d is the closest word from the
         vocabulary) and 0 is the lowest point (d is not even in the
-        top 10 closest words)
+        top 10 closest words).
 
         :rtype precision: float
         :rtype raw_score: float
@@ -143,15 +143,15 @@ class Evaluator:
         self._read_analogies()
         self._build_top_k()
         self._build_clean_top_k()
-        all_d = self.analogy_questions.T[3]
-        comparison = self.clean_top_k.T[0] == all_d
+        all_d_idx = self.analogy_questions.T[3]
+        comparison = self.clean_top_k.T[0] == all_d_idx
         exact_result = [result for result in comparison
                         if result == True]
         raw_score = len(exact_result) / self.valid_questions
         position_list = []
         for i, line in enumerate(np.flip(self.clean_top_k, 1)):
             try:
-                position = np.where(line == all_d[i])[0][0] + 1
+                position = np.where(line == all_d_idx[i])[0][0] + 1
             except IndexError:
                 position = 0
             position_list.append(position)
