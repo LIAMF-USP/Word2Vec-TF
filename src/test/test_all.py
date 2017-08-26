@@ -16,7 +16,7 @@ from utils import run_test
 
 def main():
     run_test(EvalTest,
-             "\n=== Running tests the eval module ===\n")
+             "\n=== Running tests for the eval module ===\n")
 
 if __name__ == "__main__":
     main()

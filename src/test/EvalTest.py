@@ -17,7 +17,7 @@ from eval.Evaluator import Evaluator
 
 class EvalTest(unittest.TestCase):
     """
-    Class that test the functions of the metrics module.
+    Class that test the classes and functions from the metrics module.
     """
     @classmethod
     def setUpClass(cls):
@@ -142,4 +142,4 @@ class EvalTest(unittest.TestCase):
 
 if __name__ == "__main__":
     run_test(EvalTest,
-             "\n=== Running tests the eval module ===\n")
+             "\n=== Running tests for the eval module ===\n")
