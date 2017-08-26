@@ -7,14 +7,14 @@ import numpy as np
 import os
 
 try:
-    from utils import load_embeddings, get_date_and_time
+    from utils import load_embeddings, get_date_and_time, timeit
 except ImportError:
 
     import inspect
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0, parentdir)
-    from utils import load_embeddings, get_date_and_time
+    from utils import load_embeddings, get_date_and_time, timeit
 
 
 def analogy(word1, word2, word3, word2index, embeddings):
@@ -57,6 +57,7 @@ def analogy(word1, word2, word3, word2index, embeddings):
     return results
 
 
+@timeit([2])
 def analogy_score(word2index,
                   embeddings,
                   eval_path,
@@ -92,6 +93,7 @@ def analogy_score(word2index,
     all_cat = []
     with open(eval_path) as inputfile:
         for line in inputfile:
+            line = line.lower()
             total_lines += 1
             list_line = line.strip().split()
             if list_line[0] == ":":
