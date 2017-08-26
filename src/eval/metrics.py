@@ -45,8 +45,8 @@ def analogy(word1, word2, word3, word2index, embeddings):
     all_results = [(v, index)
                    for index, v in enumerate(result_vector)
                    if (index != index1 and
-                   index != index2 and
-                   index != index3)]
+                       index != index2 and
+                       index != index3)]
 
     heapq._heapify_max(all_results)
     results = []
