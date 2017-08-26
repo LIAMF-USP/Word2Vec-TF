@@ -24,7 +24,7 @@ class MetricsTest(unittest.TestCase):
         cls.embeddings, cls.word2index = load_embeddings(cls.toy_pickle1)
         cls.toy_analogy_path = os.path.join(parentdir,
                                             'analogies',
-                                            "toy_ptbr.txt")
+                                            "toy-ptbr.txt")
         cls.analogy_path = os.path.join(parentdir,
                                         'analogies',
                                         "questions-words-ptbr.txt")
