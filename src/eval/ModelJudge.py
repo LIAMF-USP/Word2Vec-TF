@@ -2,6 +2,8 @@ import pandas as pd
 import sys
 import os
 import inspect
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 try:
     from Evaluator import Evaluator
@@ -39,9 +41,20 @@ class ModelJudge:
         self.list_of_pickle_paths = list_of_pickle_paths
         self.eval_path = eval_path
         self.encoding = encoding
-        self.date_and_time = get_date_and_time()
         self.verbose = verbose
         self.experiments_path = os.path.join(os.getcwd(), "experiments")
+        self.date_and_time = get_date_and_time()
+        self.folder_name = os.path.join(self.experiments_path,
+                                        self.date_and_time)
+
+    def _create_filename(self, filename):
+        """
+        Function that return a filename using the folder_name as a prefix.
+
+        :type filename: str
+        :rtype: str
+        """
+        return os.path.join(self.folder_name, filename)
 
     def _build_dataframe(self):
         """
@@ -72,9 +85,7 @@ class ModelJudge:
         """
         Save the model comparison in a txt file.
         """
-        experiment_name = "experiment_" + self.date_and_time + ".txt"
-        self.filename_txt = os.path.join(self.experiments_path,
-                                         experiment_name)
+        self.filename_txt = self._create_filename("results.txt")
         with open(self.filename_txt, "w") as file:
             file.write("===The results are:===\n\n")
             file.write(self.dataframe.to_string())
@@ -89,18 +100,26 @@ class ModelJudge:
         """
         Save the model comparison in a csv file.
         """
-        experiment_name = "experiment_" + self.date_and_time + ".csv"
-        self.filename_csv = os.path.join(self.experiments_path,
-                                         experiment_name)
+        self.filename_csv = self._create_filename("data.csv")
         self.dataframe.to_csv(self.filename_csv, index=False)
         if self.verbose:
             print("You can find the csv file in {}".format(self.filename_csv))
 
-    def _plot_results(self):
+    def _plot_metric(self, metric, title, filename):
         """
-        Ploting the score results.
+        Function to plot one metric and save it as the
+        file "filename".
+
+        :type metric: str
+        :type title: str
+        :type filename: str
         """
-        pass
+        fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+        ax = sns.pointplot(x="Name",
+                           y=metric,
+                           data=self.dataframe)
+        fig.suptitle(title, fontsize=24, fontweight='bold')
+        plt.savefig(filename)
 
     def compare(self):
         """
@@ -108,13 +127,39 @@ class ModelJudge:
         """
         if not os.path.exists(self.experiments_path):
             os.mkdir("experiments")
+        folder = os.path.join("experiments", self.date_and_time)
+        if not os.path.exists(folder):
+            os.mkdir(folder)
         self._build_dataframe()
         self._save_comparison_txt()
         self._save_comparison_csv()
-        self._plot_results()
+        self.filename_precision = self._create_filename("precision.png")
+        self.filename_raw_score = self._create_filename("raw_score.png")
+        self.filename_score = self._create_filename("score.png")
+        self.filename_score_preci = self._create_filename("score_preci.png")
+        self._plot_metric("Precision",
+                          "Precision per model",
+                          self.filename_precision)
+        self._plot_metric("Raw_Score",
+                          "Raw Score per model",
+                          self.filename_raw_score)
+        self._plot_metric("Score",
+                          "Score per model",
+                          self.filename_score)
+        self._plot_metric("Score*Preci",
+                          "Raw Score * Score * Precision per model",
+                          self.filename_score_preci)
 
     def get_best(self):
         """
-        assas
+        Function that return the name of the best model.
+        Best here is define be the maximum value of the
+        feature "Score*Preci"
+
+        :rtype: str
         """
-        return list(self.best_df["Name"])[0]
+        try:
+            return list(self.best_df["Name"])[0]
+        except AttributeError:
+            self.compare()
+            return list(self.best_df["Name"])[0]

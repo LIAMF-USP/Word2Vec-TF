@@ -36,7 +36,6 @@ class EvalTest(unittest.TestCase):
         cls.judge = ModelJudge(cls.list_of_names,
                                cls.list_of_pickles,
                                cls.pt_analogy_path)
-        cls.judge.compare()
         cls.best_model = cls.judge.get_best()
 
     @classmethod
@@ -138,7 +137,10 @@ class EvalTest(unittest.TestCase):
         judge.compare()
         self.assertTrue(os.path.exists(judge.filename_txt))
         self.assertTrue(os.path.exists(judge.filename_csv))
-#        self.assertTrue(os.path.exists(judge.filename_png))
+        self.assertTrue(os.path.exists(judge.filename_precision))
+        self.assertTrue(os.path.exists(judge.filename_raw_score))
+        self.assertTrue(os.path.exists(judge.filename_score))
+        self.assertTrue(os.path.exists(judge.filename_score_preci))
 
     def test_ModelJudge_txt(self):
         """
@@ -163,7 +165,7 @@ class EvalTest(unittest.TestCase):
 
     def test_ModelJudge_csv(self):
         """
-        Testing if the txt file has the right format
+        Testing if the csv file has the right format
         """
         judge = ModelJudge(EvalTest.list_of_names,
                            EvalTest.list_of_pickles,
