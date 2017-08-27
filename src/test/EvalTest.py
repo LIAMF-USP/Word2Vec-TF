@@ -5,6 +5,8 @@ import sys
 import inspect
 import shutil
 import linecache
+import matplotlib
+matplotlib.use('Agg')
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
