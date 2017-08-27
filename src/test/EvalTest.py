@@ -1,4 +1,5 @@
 import unittest
+import pandas as pd
 import os
 import sys
 import inspect
@@ -12,7 +13,7 @@ sys.path.insert(0, parentdir)
 from utils import run_test, load_embeddings
 from eval.metrics import analogy, naive_analogy_score
 from eval.Evaluator import Evaluator
-from eval.ModelComparison import ModelComparison
+from eval.ModelJudge import ModelJudge
 
 
 class EvalTest(unittest.TestCase):
@@ -32,12 +33,17 @@ class EvalTest(unittest.TestCase):
                                            "questions-words-ptbr.txt")
         cls.list_of_names = ["toy1", "toy2"]
         cls.list_of_pickles = [cls.toy_pickle1, cls.toy_pickle2]
+        cls.judge = ModelJudge(cls.list_of_names,
+                               cls.list_of_pickles,
+                               cls.pt_analogy_path)
+        cls.judge.compare()
+        cls.best_model = cls.judge.get_best()
 
-    # @classmethod
-    # def tearDown(cls):
-    #     experiments_path = os.path.join(currentdir, "experiments")
-    #     if os.path.exists(experiments_path):
-    #         shutil.rmtree(experiments_path)
+    @classmethod
+    def tearDown(cls):
+        experiments_path = os.path.join(currentdir, "experiments")
+        if os.path.exists(experiments_path):
+            shutil.rmtree(experiments_path)
 
     def test_analogy(self):
         """
@@ -66,7 +72,14 @@ class EvalTest(unittest.TestCase):
 
     def test_Evaluator(self):
         """
-        Function to test the metrics of the Evaluator
+        Function to test the metrics of the Evaluator.
+        Runing the function naive_analogy_score I got the following results:
+
+           Name  Precision  Raw_Score     Score  Score*Preci
+        0  toy1   0.000114   1.000000  1.000000     0.000114
+        1  toy2   0.023066   0.071605  0.297778     0.000492
+
+        So I am using these numbers to test the Evaluator class.
         """
         toy1_eval = Evaluator(EvalTest.toy_pickle1, EvalTest.pt_analogy_path)
         toy2_eval = Evaluator(EvalTest.toy_pickle2, EvalTest.pt_analogy_path)
@@ -103,44 +116,65 @@ class EvalTest(unittest.TestCase):
                                places=3,
                                msg="precision = {}".format(rounded_score2))
 
-        # cls.df, cls.results = compare_models(cls.list_of_names,
-        #                                      cls.list_of_pickles,
-        #                                      cls.analogy_path,
-        #                                      verbose=False)
-    def test_compare_models(self):
+    def test_ModelJudge_pick_best(self):
         """
         Comparing two "models". 'toy1.pickle' has a matrix of word embeddings
-        with less words than 'toy2.pickle'. So when we apply the analogy
+        with less words than 'toy2.pickle'. When we apply the analogy
         evaluation on these both embeddings, 'toy2' will pass in more
-        analogy tests than 'toy1'.
+        analogy tests than 'toy1'. So 'toy2' is the best model.
         """
-        ModelComparison(EvalTest.list_of_names,
-                        EvalTest.list_of_pickles,
-                        EvalTest.pt_analogy_path)
-        # best_one = EvalTest.df.nlargest(1, 'Score*Preci')
-        # result = list(best_one["Model Name"])[0]
-        # self.assertEqual(result,
-        #                  "toy2",
-        #                  msg="\ndf = \n {}".format(EvalTest.df.to_string()))
+        best_string = EvalTest.judge.best_df.to_string()
+        self.assertEqual(EvalTest.best_model,
+                         "toy2",
+                         msg="\ndf = \n {}".format(best_string))
 
-    # def test_save_comparison(self):
-    #     """
-    #     Comparing two "models". 'toy1.pickle' has a matrix of word embeddings
-    #     with less words than 'toy2.pickle'. So when we apply the analogy
-    #     evaluation on these both embeddings, 'toy2' will pass in more
-    #     analogy tests than 'toy1'.
-    #     """
-    #     filename = save_comparison(EvalTest.df,
-    #                                EvalTest.results,
-    #                                verbose=False)
-    #     self.assertEqual(linecache.getline(filename, 7),
-    #                      '===The best model is:===\n')
-    #     self.assertEqual(linecache.getline(filename, 8),
-    #                      '\n')
-    #     self.assertEqual(linecache.getline(filename, 9),
-    #                      '  Model Name  Precision     Score  Score*Preci\n')
-    #     self.assertEqual(linecache.getline(filename, 10),
-    #                      '1       toy2   0.023048  0.297778     0.006863\n')
+    def test_ModelJudge_logs(self):
+        """
+        Testing if the ModelJudge is creating all the log files.
+        """
+        judge = ModelJudge(EvalTest.list_of_names,
+                           EvalTest.list_of_pickles,
+                           EvalTest.pt_analogy_path)
+        judge.compare()
+        self.assertTrue(os.path.exists(judge.filename_txt))
+        self.assertTrue(os.path.exists(judge.filename_csv))
+#        self.assertTrue(os.path.exists(judge.filename_png))
+
+    def test_ModelJudge_txt(self):
+        """
+        Testing if the txt file has the right format
+        """
+        judge = ModelJudge(EvalTest.list_of_names,
+                           EvalTest.list_of_pickles,
+                           EvalTest.pt_analogy_path)
+        judge.compare()
+        filename = judge.filename_txt
+        header = '===The best model is:===\n'
+        df_header = '   Name  Precision  Raw_Score     Score  Score*Preci\n'
+        df_result = '1  toy2   0.023066   0.071605  0.297778     0.000492\n'
+        self.assertEqual(linecache.getline(filename, 7),
+                         header)
+        self.assertEqual(linecache.getline(filename, 8),
+                         '\n')
+        self.assertEqual(linecache.getline(filename, 9),
+                         df_header)
+        self.assertEqual(linecache.getline(filename, 10),
+                         df_result)
+
+    def test_ModelJudge_csv(self):
+        """
+        Testing if the txt file has the right format
+        """
+        judge = ModelJudge(EvalTest.list_of_names,
+                           EvalTest.list_of_pickles,
+                           EvalTest.pt_analogy_path)
+        judge.compare()
+        df = pd.read_csv(judge.filename_csv)
+        best_df = df.nlargest(1, 'Score*Preci')
+        best_model_from_csv = list(best_df["Name"])[0]
+        self.assertEqual(EvalTest.best_model,
+                         best_model_from_csv,
+                         msg="\ndf = \n {}".format(best_df.to_string()))
 
 
 if __name__ == "__main__":
