@@ -123,7 +123,9 @@ class ModelJudge:
 
     def compare(self):
         """
-        Method for the client compare all models.
+        Method for the client to compare all models.
+        The results are saved in different forms:
+        a txt file, a csv file and 4 images (png)
         """
         if not os.path.exists(self.experiments_path):
             os.mkdir("experiments")
