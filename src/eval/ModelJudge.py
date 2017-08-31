@@ -23,22 +23,22 @@ class ModelJudge:
     Class that compares different models
     using one list of model's name and one list of pickle.
 
-    :type list_of_model_names: list of str
+    :type model_names: list of str
     :type list_of_pickle_path: list of str
     :type eval_path: str
     :type encoding: str
     """
     def __init__(self,
-                 list_of_model_names,
-                 list_of_pickle_paths,
+                 model_names,
+                 pickle_paths,
                  eval_path,
                  encoding="utf8",
                  verbose=False):
 
-        size_condition = len(list_of_model_names) == len(list_of_pickle_paths)
+        size_condition = len(model_names) == len(pickle_paths)
         assert size_condition, "model names and pickle paths: diferente sizes"
-        self.list_of_model_names = list_of_model_names
-        self.list_of_pickle_paths = list_of_pickle_paths
+        self.model_names = model_names
+        self.pickle_paths = pickle_paths
         self.eval_path = eval_path
         self.encoding = encoding
         self.verbose = verbose
@@ -66,8 +66,8 @@ class ModelJudge:
         and higher score (accuracy in the analogy test).
         """
         all_observations = []
-        for name, path in zip(self.list_of_model_names,
-                              self.list_of_pickle_paths):
+        for name, path in zip(self.model_names,
+                              self.pickle_paths):
             if self.verbose:
                 print("\nEvaluating the model {}".format(name))
             evaluator = Evaluator(path, self.eval_path, self.encoding)
@@ -86,13 +86,13 @@ class ModelJudge:
         Save the model comparison in a txt file.
         """
         self.filename_txt = self._create_filename("results.txt")
-        with open(self.filename_txt, "w") as file:
-            file.write("===The results are:===\n\n")
-            file.write(self.dataframe.to_string())
+        with open(self.filename_txt, "w") as comparison_file:
+            comparison_file.write("===The results are:===\n\n")
+            comparison_file.write(self.dataframe.to_string())
             self.best_df = self.dataframe.nlargest(1, 'Score*Preci')
-            file.write("\n\n===The best model is:===\n\n")
-            file.write(self.best_df.to_string())
-            file.write("\n")
+            comparison_file.write("\n\n===The best model is:===\n\n")
+            comparison_file.write(self.best_df.to_string())
+            comparison_file.write("\n")
         if self.verbose:
             print("You can find the txt file in {}".format(self.filename_txt))
 

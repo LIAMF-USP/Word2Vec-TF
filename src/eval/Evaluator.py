@@ -83,11 +83,11 @@ class Evaluator:
         with graph.as_default():
             normalized_emb = tf.nn.l2_normalize(self.embeddings, 1)
             a_emb = tf.gather(normalized_emb,
-                              self.analogy_questions.T[0])
+                              self.analogy_questions[:, 0])
             b_emb = tf.gather(normalized_emb,
-                              self.analogy_questions.T[1])
+                              self.analogy_questions[:, 1])
             c_emb = tf.gather(normalized_emb,
-                              self.analogy_questions.T[2])
+                              self.analogy_questions[:, 2])
 
             target = c_emb + (b_emb - a_emb)
 
@@ -95,6 +95,7 @@ class Evaluator:
                              normalized_emb,
                              transpose_b=True)
             _, pred_idx = tf.nn.top_k(dist, self.top_results + 2)
+
         with tf.Session(graph=graph) as sess:
             self.top_k = sess.run(pred_idx)
 
@@ -143,11 +144,11 @@ class Evaluator:
         self._read_analogies()
         self._build_top_k()
         self._build_clean_top_k()
-        all_d_idx = self.analogy_questions.T[3]
-        comparison = self.clean_top_k.T[0] == all_d_idx
-        exact_result = [result for result in comparison
-                        if result == True]
-        raw_score = len(exact_result) / self.valid_questions
+        all_d_idx = self.analogy_questions[:, 3]
+        comparison = self.clean_top_k[:, 0] == all_d_idx
+        exact_result = sum(comparison)
+
+        raw_score = exact_result / self.valid_questions
         position_list = []
         for i, line in enumerate(np.flip(self.clean_top_k, 1)):
             try:
