@@ -86,7 +86,6 @@ class Gensim(WrapperModel):
         '''
 
         return self.model[self.model.wv.vocab]
->>>>>>> Added models folder with base class and gensim and also added funcions to util
 
 
 if __name__ == "__main__":
@@ -96,9 +95,6 @@ if __name__ == "__main__":
 
     os.chdir(parentdir)
 
-    #currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    #parentdir = os.path.dirname(currentdir)
-    # sys.path.insert(0, parentdir)
     model = Gensim('english')
 
     path = os.path.join(parentdir, 'corpora/toy-corpus-1')
