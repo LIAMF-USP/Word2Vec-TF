@@ -1,20 +1,24 @@
-from WrapperModel import WrapperModel
-from tensorflow_word2vec import word2vec
+from .WrapperModel import WrapperModel
+from .tensorflow_word2vec import word2vec
 
 import pickle
 
 
 class TFWord2Vec(WrapperModel):
 
-    def __init__(self, language, model_name, size, eval_data):
+    def __init__(self, language, model_name, window_size, embedding_size,
+                 epochs_to_train):
         self.language = language
         self.model_name = model_name
-        self.eval_data = eval_data
-        self.size = size
+        self.window_size = window_size
+        self.embedding_size = embedding_size
+        self.epochs_to_train = epochs_to_train
 
     def train(self, path_to_corpus, prepare_corpus_func=None, **kwargs):
         self.model = word2vec.train_model(path_to_corpus,
-                                          self.size, self.eval_data)
+                                          self.window_size,
+                                          self.embedding_size,
+                                          self.epochs_to_train)
 
     def get_pickle(self):
         word2index = self.model.word2index

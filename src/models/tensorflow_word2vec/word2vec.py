@@ -490,19 +490,20 @@ def _start_shell(local_ns=None):
   IPython.start_ipython(argv=[], user_ns=user_ns)
 
 
-def train_model(train_data, window_size, eval_data):
+def train_model(train_data, window_size, embedding_size, epochs_to_train):
   """Train a word2vec model."""
   FLAGS._parse_flags(None)
 
   opts = Options()
   opts.train_data = train_data
-  opts.eval_data = eval_data
   opts.window_size = window_size
+  opts.emb_dim = embedding_size
+  opts.epochs_to_train = epochs_to_train
 
   with tf.Graph().as_default(), tf.Session() as session:
     with tf.device("/cpu:0"):
       model = Word2Vec(opts, session)
-      model.read_analogies() # Read analogy questions
+      #model.read_analogies() # Read analogy questions
     for _ in xrange(opts.epochs_to_train):
       model.train()  # Process one epoch
       #model.eval()  # Eval analogies.
