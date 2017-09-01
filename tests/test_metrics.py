@@ -5,12 +5,9 @@ import inspect
 import shutil
 import linecache
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
 
-from utils import run_test, load_embeddings
-from eval.metrics import analogy, analogy_score, compare_models, save_comparison
+from src.utils import run_test, load_embeddings
+from src.eval.metrics import analogy, analogy_score, compare_models, save_comparison
 
 
 class MetricsTest(unittest.TestCase):
@@ -19,13 +16,14 @@ class MetricsTest(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        cls.toy_pickle1 = os.path.join(parentdir, 'pickles', "toy1.pickle")
-        cls.toy_pickle2 = os.path.join(parentdir, 'pickles', "toy2.pickle")
+        source_dir = 'src'
+        cls.toy_pickle1 = os.path.join(source_dir, 'pickles', "toy1.pickle")
+        cls.toy_pickle2 = os.path.join(source_dir, 'pickles', "toy2.pickle")
         cls.embeddings, cls.word2index = load_embeddings(cls.toy_pickle1)
-        cls.toy_analogy_path = os.path.join(parentdir,
+        cls.toy_analogy_path = os.path.join(source_dir,
                                             'analogies',
                                             "toy_ptbr.txt")
-        cls.analogy_path = os.path.join(parentdir,
+        cls.analogy_path = os.path.join(source_dir,
                                         'analogies',
                                         "questions-words-ptbr.txt")
         cls.list_of_names = ["toy1", "toy2"]
@@ -37,7 +35,7 @@ class MetricsTest(unittest.TestCase):
 
     @classmethod
     def tearDown(cls):
-        experiments_path = os.path.join(currentdir, "experiments")
+        experiments_path = 'experiments'
         if os.path.exists(experiments_path):
             shutil.rmtree(experiments_path)
 
