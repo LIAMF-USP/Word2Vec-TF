@@ -3,9 +3,18 @@ sudo: required
 dist: trusty
 python:
   - "3.5"
+sudo: required
+before_install:
+    - sudo apt install g++
 install:
   - pip3 install numpy
   - pip3 install pandas
   - pip3 install tensorflow
   - pip3 install unittest2
+
+  - TF_INC=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_include())')
+  - pushd .
+  - cd src/models/tensorflow_word2vec/
+  - g++ -std=c++11 -shared word2vec_ops.cc word2vec_kernels.cc -o word2vec_ops.so -fPIC -I $TF_INC -O2 -D_GLIBCXX_USE_CXX11_ABI=0
+  - popd
 script: python3 setup.py test
