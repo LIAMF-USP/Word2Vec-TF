@@ -115,9 +115,7 @@ class ModelJudge:
         :type filename: str
         """
         fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-        ax = sns.pointplot(x="Name",
-                           y=metric,
-                           data=self.dataframe)
+        ax = sns.barplot(x="Name", y=metric, data=self.dataframe)
         fig.suptitle(title, fontsize=24, fontweight='bold')
         plt.savefig(filename)
 
