@@ -19,15 +19,16 @@ class Gensim(WrapperModel):
 
     def __init__(self,
                  language,
+                 model_name,
                  embedding_size,
                  window_size,
                  min_count=5,
                  workers=4):
 
         self.language = language
+        self.model_name = model_name
         self.embedding_size = embedding_size
         self.window_size = window_size
-        self.model_name = 'Gensim'
         self.min_count = min_count
         self.workers = workers
 
