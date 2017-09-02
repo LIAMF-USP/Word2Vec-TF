@@ -1,21 +1,15 @@
 import unittest
 import pandas as pd
 import os
-import sys
-import inspect
 import shutil
 import linecache
 import matplotlib
 matplotlib.use('Agg')
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
-
-from utils import run_test, load_embeddings
-from eval.metrics import analogy, naive_analogy_score
-from eval.Evaluator import Evaluator
-from eval.ModelJudge import ModelJudge
+from src.utils import run_test, load_embeddings
+from src.eval.metrics import analogy, naive_analogy_score
+from src.eval.Evaluator import Evaluator
+from src.eval.ModelJudge import ModelJudge
 
 
 class EvalTest(unittest.TestCase):
@@ -24,14 +18,10 @@ class EvalTest(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
-        cls.toy_pickle1 = os.path.join(parentdir, 'pickles', "toy1.pickle")
-        cls.toy_pickle2 = os.path.join(parentdir, 'pickles', "toy2.pickle")
+        cls.toy_pickle1 = os.path.join('tests', 'test_pickles', "toy1.pickle")
+        cls.toy_pickle2 = os.path.join('tests', 'test_pickles', "toy2.pickle")
         cls.embeddings, cls.word2index = load_embeddings(cls.toy_pickle1)
-        cls.toy_analogy_path = os.path.join(parentdir,
-                                            'analogies',
-                                            "toy-ptbr.txt")
-        cls.pt_analogy_path = os.path.join(parentdir,
-                                           'analogies',
+        cls.pt_analogy_path = os.path.join('src', 'analogies',
                                            "questions-words-ptbr.txt")
         cls.list_of_names = ["toy1", "toy2"]
         cls.list_of_pickles = [cls.toy_pickle1, cls.toy_pickle2]
@@ -42,6 +32,7 @@ class EvalTest(unittest.TestCase):
 
     @classmethod
     def tearDown(cls):
+        currentdir = os.getcwd()
         experiments_path = os.path.join(currentdir, "experiments")
         if os.path.exists(experiments_path):
             shutil.rmtree(experiments_path)
@@ -65,7 +56,7 @@ class EvalTest(unittest.TestCase):
         """
         score, result_list, _ = naive_analogy_score(EvalTest.word2index,
                                                     EvalTest.embeddings,
-                                                    EvalTest.toy_analogy_path,
+                                                    EvalTest.pt_analogy_path,
                                                     verbose=False)
         score *= 100
         self.assertEqual(score, 100,
