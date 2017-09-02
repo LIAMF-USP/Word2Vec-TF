@@ -2,7 +2,6 @@ import unittest
 import os
 import shutil
 from src.models.gensim_model import Gensim
-from src.utils import prepare_corpus_folder
 
 
 class GensimWord2VecTest(unittest.TestCase):
@@ -26,8 +25,7 @@ class GensimWord2VecTest(unittest.TestCase):
 
     def test_train(self):
         path_to_corpus = os.path.join('tests', 'test_corpora', 'test.txt')
-        func = prepare_corpus_folder
-        self.model_wrapper.train(path_to_corpus, func)
+        self.model_wrapper.train(path_to_corpus)
 
         expected_embeddings_size = (227, 10)
         embeddings = self.model_wrapper.get_embeddings()

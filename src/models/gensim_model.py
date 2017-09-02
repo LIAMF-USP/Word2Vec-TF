@@ -32,8 +32,8 @@ class Gensim(WrapperModel):
         self.min_count = min_count
         self.workers = workers
 
-    def train(self, path_to_corpus, prepare_corpus_func, **kwargs):
-        corpus = prepare_corpus_func(path_to_corpus)
+    def train(self, path_to_corpus, **kwargs):
+        corpus = prepare_corpus_folder(path_to_corpus)
         self.model = gensim.models.Word2Vec(corpus,
                                             size=self.embedding_size,
                                             window=self.window_size,
