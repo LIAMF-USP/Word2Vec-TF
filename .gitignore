@@ -2,7 +2,7 @@
 *experiments/
 
 #corpora
-*corpora/
+corpora/
 
 #pickles
 *.pickle
