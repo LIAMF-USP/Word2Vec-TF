@@ -1,9 +1,18 @@
 import unittest
+import os
+import shutil
 
 from src.models.tensorflow_model import TFWord2Vec
 
 
 class TFWord2VecTest(unittest.TestCase):
+
+    @classmethod
+    def tearDown(cls):
+        currentdir = os.getcwd()
+        pickles_path = os.path.join(currentdir, "pickles")
+        if os.path.exists(pickles_path):
+            shutil.rmtree(pickles_path)
 
     def setUp(self):
         language = 'pt-br'
@@ -19,7 +28,7 @@ class TFWord2VecTest(unittest.TestCase):
                                         epochs_to_train)
 
     def test_train(self):
-        path_to_corpus = 'tests/test_corpora/test.txt'
+        path_to_corpus = os.path.join('tests', 'test_corpora', 'test.txt')
         self.model_wrapper.train(path_to_corpus)
 
         expected_vocabulary_size = 243
@@ -29,3 +38,6 @@ class TFWord2VecTest(unittest.TestCase):
         expected_embeddings_size = (243, 10)
         embeddings = self.model_wrapper.get_embeddings()
         self.assertEqual(expected_embeddings_size, embeddings.shape)
+
+        path = self.model_wrapper.get_pickle()
+        self.assertTrue(os.path.exists(path))

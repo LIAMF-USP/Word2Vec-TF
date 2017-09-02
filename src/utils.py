@@ -1,3 +1,4 @@
+import re
 import pickle
 import time
 import unittest
@@ -103,39 +104,29 @@ def load_embeddings(pickle_path):
 
 def simple_clean(text):
     '''
-    Function that performs simple cleanup in text
-
+    Function that performs simple cleanup in text.
+    Remove posting header, split by sentences and words,
+    keep only letters
 
     :type text: str
     :rtype str
-
     '''
 
-    import re
-    """Remove posting header, split by sentences and words, keep only letters"""
-    lines = re.split('[?!.:]\s', re.sub('^.*Lines: \d+', '', re.sub('\n', ' ', text)))
+    lines = re.split('[?!.:]\s', re.sub('^.*Lines: \d+', '',
+                                        re.sub('\n', ' ', text)))
     return [re.sub('[^a-zA-Z]', ' ', line).lower().split() for line in lines]
 
 
-def prepare_corpus_folder(dir_path):
+def prepare_corpus_folder(text_path):
     '''
+    Helper function that takes all text files
+    in a folder and creates a list of lists with all words in each file.
 
-    Helper function that takes all text files in a folder and creates a list of lists with all words in each file.
-
-
-    :type dir_path: str
-
-
+    :type text_path: str
     '''
-
-    import os
 
     corpus = []
-
-    for filename in os.listdir(dir_path):
-
-        with open(dir_path + '/' + filename, "r") as text_file:
-
-            corpus = corpus + simple_clean(text_file.read())
+    with open(text_path, "r") as text_file:
+        corpus = corpus + simple_clean(text_file.read())
 
     return corpus

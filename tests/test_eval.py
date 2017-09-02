@@ -6,7 +6,7 @@ import linecache
 import matplotlib
 matplotlib.use('Agg')
 
-from src.utils import run_test, load_embeddings
+from src.utils import load_embeddings
 from src.eval.metrics import analogy, naive_analogy_score
 from src.eval.Evaluator import Evaluator
 from src.eval.ModelJudge import ModelJudge
@@ -170,8 +170,3 @@ class EvalTest(unittest.TestCase):
         self.assertEqual(EvalTest.best_model,
                          best_model_from_csv,
                          msg="\ndf = \n {}".format(best_df.to_string()))
-
-
-if __name__ == "__main__":
-    run_test(EvalTest,
-             "\n=== Running tests for the eval module ===\n")

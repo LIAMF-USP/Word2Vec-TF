@@ -1,7 +1,7 @@
 from .WrapperModel import WrapperModel
 from .tensorflow_word2vec import word2vec
-
 import pickle
+import os
 
 
 class TFWord2Vec(WrapperModel):
@@ -25,11 +25,16 @@ class TFWord2Vec(WrapperModel):
         model_dict = {'word2index': word2index,
                       'embeddings': self.get_embeddings()}
 
-        name_piece = self.model_name + str(self.size) + self.language + ".p"
-        file_name = "pickles/" + name_piece
+        pickle_folder = os.path.join(os.getcwd(), "pickles")
+        if not os.path.exists(pickle_folder):
+            os.mkdir("pickles")
+        prefix = self.model_name + str(self.embedding_size)
+        name_piece = prefix + self.language + ".p"
+        file_name = os.path.join(pickle_folder, name_piece)
 
         with open(file_name, 'wb') as pkl_file:
             pickle.dump(model_dict, pkl_file)
+        return file_name
 
     def get_embeddings(self):
         return self.model.embeddings
