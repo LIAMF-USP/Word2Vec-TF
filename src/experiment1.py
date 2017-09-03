@@ -4,6 +4,8 @@ EXPERIMENT 1
 Experiment with the models gensim, tf and naive-tf with different
 embedding sizes. The corpus is a portuguese text with no preprossening.
 """
+import matplotlib
+matplotlib.use('Agg')
 
 import os
 from models.naive_model import NaiveTfWord2Vec
