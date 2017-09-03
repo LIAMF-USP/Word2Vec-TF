@@ -20,8 +20,8 @@ class Gensim(WrapperModel):
     def __init__(self,
                  language,
                  model_name,
-                 embedding_size,
                  window_size,
+                 embedding_size,
                  min_count=5,
                  workers=4):
 
@@ -51,8 +51,8 @@ class Gensim(WrapperModel):
         if not os.path.exists(pickle_folder):
             os.mkdir("pickles")
         prefix = self.model_name + str(self.embedding_size)
-        name_piece = prefix + self.language + ".p"
-        file_name = os.path.join(pickle_folder, name_piece)
+        self.name_piece = prefix + self.language + ".p"
+        file_name = os.path.join(pickle_folder, self. name_piece)
 
         with open(file_name, 'wb') as pkl_file:
             pickle.dump(new_dict, pkl_file)

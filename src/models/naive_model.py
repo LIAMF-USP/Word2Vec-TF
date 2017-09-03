@@ -22,7 +22,8 @@ class NaiveTfWord2Vec(WrapperModel):
                  show_step=2000,
                  verbose_step=10000,
                  valid_size=16,
-                 valid_window=100):
+                 valid_window=100,
+                 verbose=False):
 
         self.language = language
         self.model_name = model_name
@@ -41,12 +42,15 @@ class NaiveTfWord2Vec(WrapperModel):
                                       verbose_step=verbose_step,
                                       valid_size=valid_size,
                                       valid_window=valid_window)
+        self.verbose = verbose
         self.model = word2vec.SkipGramModel(self.config)
 
     def train(self, path_to_corpus, prepare_corpus_func=None, **kwargs):
         self.data = word2vec.process_text_data(path_to_corpus,
                                                self.config.vocab_size)
-        self.embeddings = word2vec.run_training(self.model, self.data)
+        self.embeddings = word2vec.run_training(self.model,
+                                                self.data,
+                                                verbose=self.verbose)
 
     def get_pickle(self):
         word2index = self.data.word2index
@@ -57,8 +61,8 @@ class NaiveTfWord2Vec(WrapperModel):
         if not os.path.exists(pickle_folder):
             os.mkdir("pickles")
         prefix = self.model_name + str(self.embedding_size)
-        name_piece = prefix + self.language + ".p"
-        file_name = os.path.join(pickle_folder, name_piece)
+        self.name_piece = prefix + self.language + ".p"
+        file_name = os.path.join(pickle_folder, self. name_piece)
 
         with open(file_name, 'wb') as pkl_file:
             pickle.dump(model_dict, pkl_file)

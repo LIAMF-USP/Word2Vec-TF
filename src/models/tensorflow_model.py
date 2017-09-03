@@ -7,12 +7,13 @@ import os
 class TFWord2Vec(WrapperModel):
 
     def __init__(self, language, model_name, window_size, embedding_size,
-                 epochs_to_train):
+                 epochs_to_train, encoding="utf8"):
         self.language = language
         self.model_name = model_name
         self.window_size = window_size
         self.embedding_size = embedding_size
         self.epochs_to_train = epochs_to_train
+        self.encoding = encoding
 
     def train(self, path_to_corpus, prepare_corpus_func=None, **kwargs):
         self.model = word2vec.train_model(path_to_corpus,
@@ -21,7 +22,10 @@ class TFWord2Vec(WrapperModel):
                                           self.epochs_to_train)
 
     def get_pickle(self):
-        word2index = self.model.word2index
+        # word2index = self.model.word2index
+        word2index = {k.decode(self.encoding): v
+                      for k, v in self.model.word2index.items()}
+
         model_dict = {'word2index': word2index,
                       'embeddings': self.get_embeddings()}
 
@@ -29,8 +33,8 @@ class TFWord2Vec(WrapperModel):
         if not os.path.exists(pickle_folder):
             os.mkdir("pickles")
         prefix = self.model_name + str(self.embedding_size)
-        name_piece = prefix + self.language + ".p"
-        file_name = os.path.join(pickle_folder, name_piece)
+        self.name_piece = prefix + self.language + ".p"
+        file_name = os.path.join(pickle_folder, self. name_piece)
 
         with open(file_name, 'wb') as pkl_file:
             pickle.dump(model_dict, pkl_file)
