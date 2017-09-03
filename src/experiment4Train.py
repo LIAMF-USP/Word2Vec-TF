@@ -4,16 +4,12 @@ EXPERIMENT 4
 Experiment with the models gensim, tf and naive-tf with different
 embedding sizes. The corpus is a portuguese text **with** preprossening.
 """
-
-import matplotlib
-matplotlib.use('Agg')
-
 import os
 from models.naive_model import NaiveTfWord2Vec
 from models.tensorflow_model import TFWord2Vec
 from models.gensim_model import Gensim
-from eval.ModelJudge import ModelJudge
 from utils import clean_text
+import pickle
 
 
 if not os.path.exists():
@@ -74,8 +70,14 @@ for i, embedding_size in enumerate(EMB_LIST):
     pickles.append(g_model.get_pickle())
     names.append(g_model.name_piece)
 
-judge = ModelJudge(names,
-                   pickles,
-                   pt_analogy_path,
-                   verbose=True)
-judge.compare()
+new_dict = {'names': names,
+            'pickles': pickles}
+
+pickle_folder = os.path.join(os.getcwd(), "pickles")
+
+if not os.path.exists(pickle_folder):
+    os.mkdir("pickles")
+
+file_name = os.path.join("pickles", "experiment4.p")
+with open(file_name, 'wb') as pkl_file:
+    pickle.dump(new_dict, pkl_file)

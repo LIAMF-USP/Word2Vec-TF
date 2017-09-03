@@ -1,4 +1,7 @@
-python3 -u experiment1.py
-python3 -u experiment2.py
-python3 -u experiment3.py
-python3 -u experiment4.py
+workon tf
+python3 -u experiment1Train.py
+python3 -u experiment2Train.py
+python3 -u experiment3Train.py
+python3 -u experiment4Train.py
+deactivate
+python3 experiments_judge.py

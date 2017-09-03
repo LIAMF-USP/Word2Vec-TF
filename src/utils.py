@@ -91,8 +91,8 @@ def load_embeddings(pickle_path):
     :type pickle_path: str
     :rtype: np.array, dict
     """
-    with open(pickle_path, "rb") as file:
-        d = pickle.load(file)
+    with open(pickle_path, "rb") as pkl_file:
+        d = pickle.load(pkl_file)
         pass
 
     embeddings = d['embeddings']
