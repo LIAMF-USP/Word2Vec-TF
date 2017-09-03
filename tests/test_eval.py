@@ -10,11 +10,14 @@ from src.utils import load_embeddings
 from src.eval.metrics import analogy, naive_analogy_score
 from src.eval.Evaluator import Evaluator
 from src.eval.ModelJudge import ModelJudge
+from src.models.gensim_model import Gensim
+from src.models.naive_model import NaiveTfWord2Vec
+from src.models.tensorflow_model import TFWord2Vec
 
 
 class EvalTest(unittest.TestCase):
     """
-    Class that test the classes and functions from the metrics module.
+    Class that test the classes and functions from the eval module.
     """
     @classmethod
     def setUpClass(cls):
@@ -34,8 +37,11 @@ class EvalTest(unittest.TestCase):
     def tearDown(cls):
         currentdir = os.getcwd()
         experiments_path = os.path.join(currentdir, "experiments")
+        pickles_path = os.path.join(currentdir, "pickles")
         if os.path.exists(experiments_path):
             shutil.rmtree(experiments_path)
+        if os.path.exists(pickles_path):
+            shutil.rmtree(pickles_path)
 
     def test_analogy(self):
         """
@@ -120,12 +126,60 @@ class EvalTest(unittest.TestCase):
                          "toy2",
                          msg="\ndf = \n {}".format(best_string))
 
-    def test_ModelJudge_logs(self):
+    def test_ModelJudge_train2log(self):
         """
-        Testing if the ModelJudge is creating all the log files.
+        Testing if the ModelJudge is creating all the log files
+        after the three basic models perform their training routine.
+
+        **This test should always pass. It is a toy version of an experiment**
+
         """
-        judge = ModelJudge(EvalTest.list_of_names,
-                           EvalTest.list_of_pickles,
+        path_to_corpus = os.path.join('tests', 'test_corpora', 'test.txt')
+        pickles = []
+        names = []
+        language = '_pt'
+        window_size = 1
+        embedding_size = 10
+        vocab_size = 243
+        num_steps = 101
+        show_step = 50
+        epochs_to_train = 1
+        naive_model_name = 'n'
+        tf_model_name = 'tf'
+        g_model_name = 'g'
+
+        naive_model = NaiveTfWord2Vec(language,
+                                      naive_model_name,
+                                      window_size,
+                                      embedding_size,
+                                      vocab_size,
+                                      num_steps=num_steps,
+                                      show_step=show_step)
+
+        naive_model.train(path_to_corpus)
+        pickles.append(naive_model.get_pickle())
+        names.append(naive_model.name_piece)
+        tf_model = TFWord2Vec(language,
+                              tf_model_name,
+                              window_size,
+                              embedding_size,
+                              epochs_to_train)
+
+        tf_model.train(path_to_corpus)
+        pickles.append(tf_model.get_pickle())
+        names.append(tf_model.name_piece)
+
+        g_model = Gensim(language,
+                         g_model_name,
+                         window_size,
+                         embedding_size)
+
+        g_model.train(path_to_corpus)
+        pickles.append(g_model.get_pickle())
+        names.append(g_model.name_piece)
+
+        judge = ModelJudge(names,
+                           pickles,
                            EvalTest.pt_analogy_path)
         judge.compare()
         self.assertTrue(os.path.exists(judge.filename_txt))

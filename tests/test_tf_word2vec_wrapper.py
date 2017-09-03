@@ -31,11 +31,11 @@ class TFWord2VecTest(unittest.TestCase):
         path_to_corpus = os.path.join('tests', 'test_corpora', 'test.txt')
         self.model_wrapper.train(path_to_corpus)
 
-        expected_vocabulary_size = 243
+        expected_vocabulary_size = 253
         word2index = self.model_wrapper.model.word2index
         self.assertEqual(expected_vocabulary_size, len(word2index))
 
-        expected_embeddings_size = (243, 10)
+        expected_embeddings_size = (253, 10)
         embeddings = self.model_wrapper.get_embeddings()
         self.assertEqual(expected_embeddings_size, embeddings.shape)
 
