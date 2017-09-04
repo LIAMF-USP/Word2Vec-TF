@@ -2,7 +2,7 @@
 EXPERIMENT 4
 
 Experiment with the models gensim, tf and naive-tf with different
-embedding sizes. The corpus is a portuguese text **with** preprossening.
+embedding sizes. The corpus is an english text **with** preprossening.
 """
 import os
 from models.naive_model import NaiveTfWord2Vec
@@ -11,13 +11,11 @@ from models.gensim_model import Gensim
 from utils import clean_text
 import pickle
 
+path_to_corpus = os.path.join('corpora', 'text8CLEAN.txt')
 
-if not os.path.exists():
+if not os.path.exists(path_to_corpus):
     path_to_raw_corpus = os.path.join('corpora', 'text8.txt')
     clean_text(path_to_raw_corpus)
-
-path_to_corpus = os.path.join('corpora', 'text8CLEAN.txt')
-pt_analogy_path = os.path.join('analogies', "questions-words.txt")
 
 pickles = []
 names = []

@@ -11,12 +11,11 @@ from models.gensim_model import Gensim
 from utils import clean_text
 import pickle
 
-if not os.path.exists():
+path_to_corpus = os.path.join('corpora', 'pt96CLEAN.txt')
+
+if not os.path.exists(path_to_corpus):
     path_to_raw_corpus = os.path.join('corpora', 'pt96.txt')
     clean_text(path_to_raw_corpus)
-
-path_to_corpus = os.path.join('corpora', 'pt96CLEAN.txt')
-pt_analogy_path = os.path.join('analogies', "questions-words-ptbr.txt")
 
 pickles = []
 names = []

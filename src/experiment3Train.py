@@ -12,7 +12,6 @@ from models.gensim_model import Gensim
 import pickle
 
 path_to_corpus = os.path.join('corpora', 'text8.txt')
-pt_analogy_path = os.path.join('analogies', "questions-words.txt")
 
 pickles = []
 names = []
