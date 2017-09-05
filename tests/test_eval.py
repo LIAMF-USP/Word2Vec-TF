@@ -11,7 +11,6 @@ from src.eval.metrics import analogy, naive_analogy_score
 from src.eval.Evaluator import Evaluator
 from src.eval.ModelJudge import ModelJudge
 from src.models.gensim_model import Gensim
-from src.models.naive_model import NaiveTfWord2Vec
 from src.models.tensorflow_model import TFWord2Vec
 
 
@@ -140,25 +139,10 @@ class EvalTest(unittest.TestCase):
         language = '_pt'
         window_size = 1
         embedding_size = 10
-        vocab_size = 243
-        num_steps = 101
-        show_step = 50
         epochs_to_train = 1
-        naive_model_name = 'n'
         tf_model_name = 'tf'
         g_model_name = 'g'
 
-        naive_model = NaiveTfWord2Vec(language,
-                                      naive_model_name,
-                                      window_size,
-                                      embedding_size,
-                                      vocab_size,
-                                      num_steps=num_steps,
-                                      show_step=show_step)
-
-        naive_model.train(path_to_corpus)
-        pickles.append(naive_model.get_pickle())
-        names.append(naive_model.name_piece)
         tf_model = TFWord2Vec(language,
                               tf_model_name,
                               window_size,
