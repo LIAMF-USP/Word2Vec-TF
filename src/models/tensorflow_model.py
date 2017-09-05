@@ -32,9 +32,9 @@ class TFWord2Vec(WrapperModel):
         pickle_folder = os.path.join(os.getcwd(), "pickles")
         if not os.path.exists(pickle_folder):
             os.mkdir("pickles")
-        prefix = self.model_name + str(self.embedding_size)
-        self.name_piece = prefix + self.language + ".p"
-        file_name = os.path.join(pickle_folder, self. name_piece)
+        self.short_name = self.model_name + str(self.embedding_size)
+        name_piece = self.short_name + self.language + ".p"
+        file_name = os.path.join(pickle_folder, name_piece)
 
         with open(file_name, 'wb') as pkl_file:
             pickle.dump(model_dict, pkl_file)

@@ -126,7 +126,7 @@ class EvalTest(unittest.TestCase):
 
         tf_model.train(path_to_corpus)
         pickles.append(tf_model.get_pickle())
-        names.append(tf_model.name_piece)
+        names.append(tf_model.short_name)
 
         g_model = Gensim(language,
                          g_model_name,
@@ -135,7 +135,7 @@ class EvalTest(unittest.TestCase):
 
         g_model.train(path_to_corpus)
         pickles.append(g_model.get_pickle())
-        names.append(g_model.name_piece)
+        names.append(g_model.short_name)
 
         judge = ModelJudge(names,
                            pickles,
