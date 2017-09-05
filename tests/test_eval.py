@@ -7,7 +7,6 @@ import matplotlib
 matplotlib.use('Agg')
 
 from src.utils import load_embeddings
-from src.eval.metrics import analogy, naive_analogy_score
 from src.eval.Evaluator import Evaluator
 from src.eval.ModelJudge import ModelJudge
 from src.models.gensim_model import Gensim
@@ -42,35 +41,11 @@ class EvalTest(unittest.TestCase):
         if os.path.exists(pickles_path):
             shutil.rmtree(pickles_path)
 
-    def test_analogy(self):
-        """
-        Function to test if the analogy function can perform
-        a basic analogy
-        """
-        similar_words = analogy('irmão',
-                                'irmã',
-                                'ele',
-                                EvalTest.word2index,
-                                EvalTest.embeddings)
-        self.assertEqual(similar_words[0], "ela",
-                         msg="\nsimilar_words= \n {}".format(similar_words))
-
-    def test_analogy_score(self):
-        """
-        Function to test the naive_analogy_score function
-        """
-        score, result_list, _ = naive_analogy_score(EvalTest.word2index,
-                                                    EvalTest.embeddings,
-                                                    EvalTest.pt_analogy_path,
-                                                    verbose=False)
-        score *= 100
-        self.assertEqual(score, 100,
-                         msg="\nresults = \n {}".format(result_list))
-
     def test_Evaluator(self):
         """
         Function to test the metrics of the Evaluator.
-        Runing the function naive_analogy_score I got the following results:
+        with an older implementation of
+        the eval module I got the following results:
 
            Name  Precision  Raw_Score     Score  Score*Preci
         0  toy1   0.000114   1.000000  1.000000     0.000114
