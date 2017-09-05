@@ -134,20 +134,13 @@ def prepare_corpus_folder(text_path):
 
 def clean_text(path):
     """
-    Function that remove every link, number and punctiation
-    of a txt file, and create a new txt such that every link is replace
-    with the string  "LINK", every @Somebody is replace with 'PERSON',
-    every number with "N", every emoji with "EMOJI". Multiple
-    spaces are also eliminated. It also puts every
-    word in the lower case format.
+    Function that remove every link, every emoji with "EMOJI" and multiple
+    spaces. It also puts every  word in the lower case format.
 
     :type path: str
     """
     new_path = path[:-4] + "CLEAN.txt"
     url = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
-    # nums = re.compile(r'[+-]?\d+(?:\.\d+)?')
-    # punct = re.compile(r'[.?\-",!;–…]+')
-    # friends = re.compile(r'@[A-Za-z0-9]+')
     spaces = re.compile(' +')
     emoji_pattern = re.compile("["
             u"\U0001F600-\U0001F64F"  # emoticons
@@ -159,9 +152,6 @@ def clean_text(path):
         for line in open(path):
             line = line.lower()
             new_line = url.sub("LINK", line)
-            # new_line = friends.sub('PERSON', new_line)
-            # new_line = nums.sub("N", new_line)
-            # new_line = punct.sub(" ", new_line)
             new_line = emoji_pattern.sub("EMOJI", new_line)
             new_line = spaces.sub(" ", new_line)
             f.write(new_line)
