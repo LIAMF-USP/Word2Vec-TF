@@ -81,20 +81,21 @@ class Evaluator:
         """
         graph = tf.Graph()
         with graph.as_default():
-            normalized_emb = tf.nn.l2_normalize(self.embeddings, 1)
-            a_emb = tf.gather(normalized_emb,
-                              self.analogy_questions[:, 0])
-            b_emb = tf.gather(normalized_emb,
-                              self.analogy_questions[:, 1])
-            c_emb = tf.gather(normalized_emb,
-                              self.analogy_questions[:, 2])
+            with tf.device('/cpu:0'):
+                normalized_emb = tf.nn.l2_normalize(self.embeddings, 1)
+                a_emb = tf.gather(normalized_emb,
+                                  self.analogy_questions[:, 0])
+                b_emb = tf.gather(normalized_emb,
+                                  self.analogy_questions[:, 1])
+                c_emb = tf.gather(normalized_emb,
+                                  self.analogy_questions[:, 2])
 
-            target = c_emb + (b_emb - a_emb)
+                target = c_emb + (b_emb - a_emb)
 
-            dist = tf.matmul(target,
-                             normalized_emb,
-                             transpose_b=True)
-            _, pred_idx = tf.nn.top_k(dist, self.top_results + 2)
+                dist = tf.matmul(target,
+                                 normalized_emb,
+                                 transpose_b=True)
+                _, pred_idx = tf.nn.top_k(dist, self.top_results + 2)
 
         with tf.Session(graph=graph) as sess:
             self.top_k = sess.run(pred_idx)
