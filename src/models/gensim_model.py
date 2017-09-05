@@ -6,13 +6,13 @@ import sys
 import inspect
 
 try:
-    from utils import prepare_corpus_folder
+    from utils import prepare_corpus_file
 except ImportError:
 
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0, parentdir)
-    from utils import prepare_corpus_folder
+    from utils import prepare_corpus_file
 
 
 class Gensim(WrapperModel):
@@ -32,8 +32,8 @@ class Gensim(WrapperModel):
         self.min_count = min_count
         self.workers = workers
 
-    def train(self, path_to_corpus, **kwargs):
-        corpus = prepare_corpus_folder(path_to_corpus)
+    def train(self, path_to_corpus):
+        corpus = prepare_corpus_file(path_to_corpus)
         self.model = gensim.models.Word2Vec(corpus,
                                             size=self.embedding_size,
                                             window=self.window_size,

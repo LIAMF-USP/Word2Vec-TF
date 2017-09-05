@@ -15,7 +15,7 @@ class TFWord2Vec(WrapperModel):
         self.epochs_to_train = epochs_to_train
         self.encoding = encoding
 
-    def train(self, path_to_corpus, prepare_corpus_func=None, **kwargs):
+    def train(self, path_to_corpus, prepare_corpus_func=None):
         self.model = word2vec.train_model(path_to_corpus,
                                           self.window_size,
                                           self.embedding_size,

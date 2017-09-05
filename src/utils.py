@@ -117,9 +117,9 @@ def simple_clean(text):
     return [re.sub('[^a-zA-Z]', ' ', line).lower().split() for line in lines]
 
 
-def prepare_corpus_folder(text_path):
+def prepare_corpus_file(text_path):
     '''
-    Helper function that takes all text files
+    Helper function that takes one text files
     in a folder and creates a list of lists with all words in each file.
 
     :type text_path: str
@@ -127,10 +127,29 @@ def prepare_corpus_folder(text_path):
 
     corpus = []
     with open(text_path, "r") as text_file:
-        corpus = corpus + simple_clean(text_file.read())
+        corpus = simple_clean(text_file.read())
 
     return corpus
 
+
+def prepare_corpus_folder(dir_path):
+    '''
+    Helper function that takes all text files
+    in a folder and creates a list of lists with all words in each file.
+
+    :type text_path: str
+    '''
+    import os
+
+    corpus = []
+
+    for filename in os.listdir(dir_path):
+
+        with open(dir_path + '/' + filename, "r") as text_file:
+
+            corpus = corpus + simple_clean(text_file.read())
+
+    return corpus
 
 def clean_text(path):
     """
