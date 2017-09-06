@@ -1,10 +1,11 @@
 """
-EXPERIMENT 3 & 4
+EXPERIMENT 5, 6, 7, & 8
 
 Experiment with the models gensim, and the official tensorflow implementation
 with different window sizes.
 
-We use both a corpus in portuguese as a corpus in english with preprocessing.
+We use both a corpus in portuguese as a corpus in english
+with and without preprocessing.
 """
 import os
 from train_functions import train_both_models_with_different_window_sizes
@@ -40,27 +41,48 @@ if not os.path.exists(en_path_to_corpus):
 if not os.path.exists(pt_path_to_corpus):
     clean_text(pt_path_to_raw_corpus)
 
-pt_language = '_ptC'
-en_language = '_enC'
+pt_languageR = 'pR'
+en_languageR = 'eR'
+pt_languageC = 'pC'
+en_languageC = 'eC'
+
 window_size = 5
 emb_size = 500
 window_list = [2, 5, 10, 15, 20, 25]
 epochs_to_train = 5
 
-# EXPERIMENT 3: portuguese
+# EXPERIMENT 5: portuguese raw
 
-train_both_models_with_different_window_sizes(pt_language,
+train_both_models_with_different_window_sizes(pt_languageR,
+                                              emb_size,
+                                              window_list,
+                                              epochs_to_train,
+                                              pt_path_to_raw_corpus,
+                                              "experiment5")
+
+# EXPERIMENT 6: english raw
+
+train_both_models_with_different_window_sizes(en_languageR,
+                                              emb_size,
+                                              window_list,
+                                              epochs_to_train,
+                                              en_path_to_raw_corpus,
+                                              "experiment6")
+
+# EXPERIMENT 7: portuguese clean
+
+train_both_models_with_different_window_sizes(pt_languageC,
                                               emb_size,
                                               window_list,
                                               epochs_to_train,
                                               pt_path_to_corpus,
-                                              "experiment3")
+                                              "experiment7")
 
-# EXPERIMENT 4: english
+# EXPERIMENT 8: english clean
 
-train_both_models_with_different_window_sizes(en_language,
+train_both_models_with_different_window_sizes(en_languageC,
                                               emb_size,
                                               window_list,
                                               epochs_to_train,
-                                              pt_path_to_corpus,
-                                              "experiment4")
+                                              en_path_to_corpus,
+                                              "experiment8")

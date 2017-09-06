@@ -97,9 +97,10 @@ def train_both_models_with_different_window_sizes(language,
         print("{0}/{1}: Training word embeddings using window = {2}".format(i + 1,
                                                                             size,
                                                                             window_size))
+        sufix = "W" + window_size
         print("\n====Training the official tf model====\n")
         tf_model = TFWord2Vec(language,
-                              'tf',
+                              'tf' + sufix,
                               window_size,
                               emb_size,
                               epochs_to_train)
@@ -109,7 +110,7 @@ def train_both_models_with_different_window_sizes(language,
         names.append(tf_model.short_name)
         print("\n====Training the Gensim model====\n")
         g_model = Gensim(language,
-                         'g',
+                         'g' + sufix,
                          window_size,
                          emb_size)
 

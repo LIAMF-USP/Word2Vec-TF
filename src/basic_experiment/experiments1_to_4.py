@@ -1,10 +1,11 @@
 """
-EXPERIMENT 1 & 2
+EXPERIMENT 1, 2, 3 and 4
 
 Experiment with the models gensim, and the official tensorflow implementation
 with different embedding sizes.
 
-We use both a corpus in portuguese as a corpus in english with preprocessing.
+We use both a corpus in portuguese as a corpus in
+english with and without preprocessing.
 """
 import os
 from train_functions import train_both_models_with_different_emb_sizes
@@ -39,26 +40,47 @@ if not os.path.exists(en_path_to_corpus):
 if not os.path.exists(pt_path_to_corpus):
     clean_text(pt_path_to_raw_corpus)
 
-pt_language = '_ptC'
-en_language = '_enC'
+pt_languageR = '_ptR'
+en_languageR = '_enR'
+pt_languageC = '_ptC'
+en_languageC = '_enC'
+
 window_size = 5
 emb_list = [80, 90, 100, 120, 200, 300, 500]
 epochs_to_train = 5
 
-# EXPERIMENT 1: portuguese
+# EXPERIMENT 1: portuguese raw
 
-train_both_models_with_different_emb_sizes(pt_language,
+train_both_models_with_different_emb_sizes(pt_languageR,
+                                           window_size,
+                                           emb_list,
+                                           epochs_to_train,
+                                           pt_path_to_raw_corpus,
+                                           "experiment1")
+
+# EXPERIMENT 2: english raw
+
+train_both_models_with_different_emb_sizes(en_languageR,
+                                           window_size,
+                                           emb_list,
+                                           epochs_to_train,
+                                           en_path_to_raw_corpus,
+                                           "experiment2")
+
+# EXPERIMENT 3: portuguese clean
+
+train_both_models_with_different_emb_sizes(pt_languageC,
                                            window_size,
                                            emb_list,
                                            epochs_to_train,
                                            pt_path_to_corpus,
-                                           "experiment1")
+                                           "experiment3")
 
-# EXPERIMENT 2: english
+# EXPERIMENT 4: english clean
 
-train_both_models_with_different_emb_sizes(en_language,
+train_both_models_with_different_emb_sizes(en_languageC,
                                            window_size,
                                            emb_list,
                                            epochs_to_train,
                                            en_path_to_corpus,
-                                           "experiment2")
+                                           "experiment4")
