@@ -27,13 +27,16 @@ class ModelJudge:
     :type list_of_pickle_path: list of str
     :type eval_path: str
     :type encoding: str
+    :type verbose: boolean
+    :type experiment_name: None or str
     """
     def __init__(self,
                  model_names,
                  pickle_paths,
                  eval_path,
                  encoding="utf8",
-                 verbose=False):
+                 verbose=False,
+                 experiment_name=None):
 
         size_condition = len(model_names) == len(pickle_paths)
         assert size_condition, "model names and pickle paths: diferente sizes"
@@ -43,9 +46,13 @@ class ModelJudge:
         self.encoding = encoding
         self.verbose = verbose
         self.experiments_path = os.path.join(os.getcwd(), "experiments")
-        self.date_and_time = get_date_and_time()
-        self.folder_name = os.path.join(self.experiments_path,
-                                        self.date_and_time)
+        if experiment_name is None:
+            date_and_time = get_date_and_time()
+            self.folder_name = os.path.join(self.experiments_path,
+                                            date_and_time)
+        else:
+            self.folder_name = os.path.join(self.experiments_path,
+                                            experiment_name)
 
     def _create_filename(self, filename):
         """
@@ -127,9 +134,8 @@ class ModelJudge:
         """
         if not os.path.exists(self.experiments_path):
             os.mkdir("experiments")
-        folder = os.path.join("experiments", self.date_and_time)
-        if not os.path.exists(folder):
-            os.mkdir(folder)
+        if not os.path.exists(self.folder_name):
+            os.mkdir(self.folder_name)
         self._build_dataframe()
         self._save_comparison_txt()
         self._save_comparison_csv()
