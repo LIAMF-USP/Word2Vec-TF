@@ -97,7 +97,7 @@ def train_both_models_with_different_window_sizes(language,
         print("{0}/{1}: Training word embeddings using window = {2}".format(i + 1,
                                                                             size,
                                                                             window_size))
-        sufix = "W" + window_size
+        sufix = "W" + str(window_size)
         print("\n====Training the official tf model====\n")
         tf_model = TFWord2Vec(language,
                               'tf' + sufix,
