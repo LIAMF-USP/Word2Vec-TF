@@ -5,11 +5,11 @@ import shutil
 import linecache
 import matplotlib
 matplotlib.use('Agg')
-from src.utils import load_embeddings
-from src.eval.Evaluator import Evaluator
-from src.eval.ModelJudge import ModelJudge
-from src.models.gensim_model import Gensim
-from src.models.tensorflow_model import TFWord2Vec
+from src.utils import load_embeddings  # noqa
+from src.eval.Evaluator import Evaluator  # noqa
+from src.eval.ModelJudge import ModelJudge  # noqa
+from src.models.gensim_model import Gensim  # noqa
+from src.models.tensorflow_model import TFWord2Vec  # noqa
 
 
 class EvalTest(unittest.TestCase):

@@ -18,7 +18,7 @@ currentdir = os.path.dirname(almost_current)
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
-from utils import clean_text
+from utils import clean_text  # noqa
 
 en_path_to_raw_corpus = os.path.join('corpora', 'text8.txt')
 pt_path_to_raw_corpus = os.path.join('corpora', 'pt96.txt')

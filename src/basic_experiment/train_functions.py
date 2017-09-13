@@ -8,8 +8,8 @@ currentdir = os.path.dirname(almost_current)
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
-from models.tensorflow_model import TFWord2Vec
-from models.gensim_model import Gensim
+from models.tensorflow_model import TFWord2Vec  # noqa
+from models.gensim_model import Gensim  # noqa
 
 
 def train_both_models_with_different_emb_sizes(language,
