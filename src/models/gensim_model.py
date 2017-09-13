@@ -9,7 +9,8 @@ try:
     from utils import prepare_corpus_file
 except ImportError:
 
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    almost_current = os.path.abspath(inspect.getfile(inspect.currentframe()))
+    currentdir = os.path.dirname(almost_current)
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0, parentdir)
     from utils import prepare_corpus_file
