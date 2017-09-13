@@ -151,6 +151,7 @@ def prepare_corpus_folder(dir_path):
 
     return corpus
 
+
 def clean_text(path):
     """
     Function that remove every link, every emoji with "EMOJI" and multiple
@@ -159,13 +160,14 @@ def clean_text(path):
     :type path: str
     """
     new_path = path[:-4] + "CLEAN.txt"
-    url = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+    car_http = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|'
+    cdr_http = '[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    url = re.compile(car_http + cdr_http)
     spaces = re.compile(' +')
-    emoji_pattern = re.compile("["
-            u"\U0001F600-\U0001F64F"  # emoticons
-            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-            u"\U0001F680-\U0001F6FF"  # transport & map symbols
-            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+    emoji_pattern = re.compile("[" u"\U0001F600-\U0001F64F"  # emoticons
+                                   u"\U0001F300-\U0001F5FF"  # pictographs
+                                   u"\U0001F680-\U0001F6FF"  # map symbols
+                                   u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                                "]+", flags=re.UNICODE)
     with open(new_path, "w") as f:
         for line in open(path):
