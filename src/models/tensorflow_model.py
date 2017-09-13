@@ -22,7 +22,6 @@ class TFWord2Vec(WrapperModel):
                                           self.epochs_to_train)
 
     def get_pickle(self):
-        # word2index = self.model.word2index
         word2index = {k.decode(self.encoding): v
                       for k, v in self.model.word2index.items()}
 

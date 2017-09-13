@@ -1,10 +1,10 @@
 import pickle
-
 import os
 import sys
 import inspect
 
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+almost_current = os.path.abspath(inspect.getfile(inspect.currentframe()))
+currentdir = os.path.dirname(almost_current)
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
@@ -34,15 +34,15 @@ def train_both_models_with_different_emb_sizes(language,
     size = len(emb_list)
     pickles = []
     names = []
-    for i, embedding_size in enumerate(emb_list):
+    for i, emb in enumerate(emb_list):
         print("{0}/{1}: Training word embeddings of size {2}".format(i + 1,
                                                                      size,
-                                                                     embedding_size))
+                                                                     emb))
         print("\n====Training the official tf model====\n")
         tf_model = TFWord2Vec(language,
                               'tf',
                               window_size,
-                              embedding_size,
+                              emb,
                               epochs_to_train)
 
         tf_model.train(path_to_corpus)
@@ -52,7 +52,7 @@ def train_both_models_with_different_emb_sizes(language,
         g_model = Gensim(language,
                          'g',
                          window_size,
-                         embedding_size)
+                         emb)
 
         g_model.train(path_to_corpus)
         pickles.append(g_model.get_pickle())
@@ -94,9 +94,7 @@ def train_both_models_with_different_window_sizes(language,
     pickles = []
     names = []
     for i, window_size in enumerate(window_list):
-        print("{0}/{1}: Training word embeddings using window = {2}".format(i + 1,
-                                                                            size,
-                                                                            window_size))
+        print("{0}/{1}: window size = {2}".format(i + 1, size, window_size))
         sufix = "W" + str(window_size)
         print("\n====Training the official tf model====\n")
         tf_model = TFWord2Vec(language,
