@@ -4,13 +4,12 @@ import os
 import shutil
 import linecache
 import matplotlib
-matplotlib.use('Agg')
-
 from src.utils import load_embeddings
 from src.eval.Evaluator import Evaluator
 from src.eval.ModelJudge import ModelJudge
 from src.models.gensim_model import Gensim
 from src.models.tensorflow_model import TFWord2Vec
+matplotlib.use('Agg')
 
 
 class EvalTest(unittest.TestCase):
