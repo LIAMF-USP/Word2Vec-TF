@@ -1,6 +1,49 @@
+import re
 import pickle
 import time
 import unittest
+
+timing = {}
+
+
+def get_time(f, args=[]):
+    """
+    After using timeit we can get the duration of the function f
+    when it was applied in parameters args. Normally it is expected
+    that args is a list of parameters, but it can be also a single parameter.
+
+    :type f: function
+    :type args: list
+    :rtype: float
+    """
+    if type(args) != list:
+        args = [args]
+    key = f.__name__
+    if args != []:
+        key += "-" + "-".join([str(arg) for arg in args])
+    return timing[key]
+
+
+def timeit(index_args=[]):
+
+    def dec(method):
+        """
+        Decorator for time information
+        """
+
+        def timed(*args, **kw):
+            ts = time.time()
+            result = method(*args, **kw)
+            timed.__name__ = method.__name__
+            te = time.time()
+            fkey = method.__name__
+            for i, arg in enumerate(args):
+                if i in index_args:
+                    fkey += "-" + str(arg)
+            timing[fkey] = te - ts
+            return result
+        return timed
+    return dec
 
 
 def get_date_and_time():
@@ -48,8 +91,8 @@ def load_embeddings(pickle_path):
     :type pickle_path: str
     :rtype: np.array, dict
     """
-    with open(pickle_path, "rb") as file:
-        d = pickle.load(file)
+    with open(pickle_path, "rb") as pkl_file:
+        d = pickle.load(pkl_file)
         pass
 
     embeddings = d['embeddings']
@@ -61,31 +104,41 @@ def load_embeddings(pickle_path):
 
 def simple_clean(text):
     '''
-    Function that performs simple cleanup in text
-
+    Function that performs simple cleanup in text.
+    Remove posting header, split by sentences and words,
+    keep only letters
 
     :type text: str
     :rtype str
-
     '''
 
-    import re
-    """Remove posting header, split by sentences and words, keep only letters"""
-    lines = re.split('[?!.:]\s', re.sub('^.*Lines: \d+', '', re.sub('\n', ' ', text)))
+    lines = re.split('[?!.:]\s', re.sub('^.*Lines: \d+', '',
+                                        re.sub('\n', ' ', text)))
     return [re.sub('[^a-zA-Z]', ' ', line).lower().split() for line in lines]
+
+
+def prepare_corpus_file(text_path):
+    '''
+    Helper function that takes one text files
+    in a folder and creates a list of lists with all words in each file.
+
+    :type text_path: str
+    '''
+
+    corpus = []
+    with open(text_path, "r") as text_file:
+        corpus = simple_clean(text_file.read())
+
+    return corpus
 
 
 def prepare_corpus_folder(dir_path):
     '''
+    Helper function that takes all text files
+    in a folder and creates a list of lists with all words in each file.
 
-    Helper function that takes all text files in a folder and creates a list of lists with all words in each file.
-
-
-    :type dir_path: str
-
-
+    :type text_path: str
     '''
-
     import os
 
     corpus = []
@@ -97,3 +150,29 @@ def prepare_corpus_folder(dir_path):
             corpus = corpus + simple_clean(text_file.read())
 
     return corpus
+
+
+def clean_text(path):
+    """
+    Function that remove every link, every emoji with "EMOJI" and multiple
+    spaces. It also puts every  word in the lower case format.
+
+    :type path: str
+    """
+    new_path = path[:-4] + "CLEAN.txt"
+    car_http = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|'
+    cdr_http = '[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    url = re.compile(car_http + cdr_http)
+    spaces = re.compile(' +')
+    emoji_pattern = re.compile("[" u"\U0001F600-\U0001F64F"  # emoticons
+                                   u"\U0001F300-\U0001F5FF"  # pictographs
+                                   u"\U0001F680-\U0001F6FF"  # map symbols
+                                   u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
+    with open(new_path, "w") as f:
+        for line in open(path):
+            line = line.lower()
+            new_line = url.sub("LINK", line)
+            new_line = emoji_pattern.sub("EMOJI", new_line)
+            new_line = spaces.sub(" ", new_line)
+            f.write(new_line)

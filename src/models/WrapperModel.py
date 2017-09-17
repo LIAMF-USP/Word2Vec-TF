@@ -28,6 +28,10 @@ class WrapperModel(ABC):
 
         -- embeddings : the matrix of word embeddings
         -- word2index : a dict of the form word : index.
+
+        and returns the path of the pickle
+
+        :rtype: str
         """
         pass
 

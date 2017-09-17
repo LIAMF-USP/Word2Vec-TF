@@ -8,8 +8,12 @@ before_install:
     - sudo apt install g++
 install:
   - pip3 install numpy
+  - pip3 install gensim
+  - pip3 install google-compute-engine
   - pip3 install pandas
   - pip3 install tensorflow
+  - pip3 install matplotlib
+  - pip3 install seaborn
   - pip3 install unittest2
 
   - TF_INC=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_include())')
@@ -18,3 +22,4 @@ install:
   - g++ -std=c++11 -shared word2vec_ops.cc word2vec_kernels.cc -o word2vec_ops.so -fPIC -I $TF_INC -O2 -D_GLIBCXX_USE_CXX11_ABI=0
   - popd
 script: python3 setup.py test
+

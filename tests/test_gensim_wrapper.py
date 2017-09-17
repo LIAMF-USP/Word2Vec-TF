@@ -1,11 +1,10 @@
 import unittest
 import os
 import shutil
+from src.models.gensim_model import Gensim
 
-from src.models.tensorflow_model import TFWord2Vec
 
-
-class TFWord2VecTest(unittest.TestCase):
+class GensimWord2VecTest(unittest.TestCase):
 
     @classmethod
     def tearDown(cls):
@@ -16,26 +15,19 @@ class TFWord2VecTest(unittest.TestCase):
 
     def setUp(self):
         language = 'pt-br'
-        model_name = 'tf'
-        window_size = 1
+        model_name = 'ge'
         embedding_size = 10
-        epochs_to_train = 1
-
-        self.model_wrapper = TFWord2Vec(language,
-                                        model_name,
-                                        window_size,
-                                        embedding_size,
-                                        epochs_to_train)
+        window_size = 1
+        self.model_wrapper = Gensim(language,
+                                    model_name,
+                                    window_size,
+                                    embedding_size)
 
     def test_train(self):
         path_to_corpus = os.path.join('tests', 'test_corpora', 'test.txt')
         self.model_wrapper.train(path_to_corpus)
 
-        expected_vocabulary_size = 253
-        word2index = self.model_wrapper.model.word2index
-        self.assertEqual(expected_vocabulary_size, len(word2index))
-
-        expected_embeddings_size = (253, 10)
+        expected_embeddings_size = (236, 10)
         embeddings = self.model_wrapper.get_embeddings()
         self.assertEqual(expected_embeddings_size, embeddings.shape)
 

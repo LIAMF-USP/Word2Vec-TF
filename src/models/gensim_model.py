@@ -1,4 +1,4 @@
-from WrapperModel import WrapperModel
+from .WrapperModel import WrapperModel
 import gensim
 import pickle
 import os
@@ -6,99 +6,58 @@ import sys
 import inspect
 
 try:
-    from utils import prepare_corpus_folder
+    from utils import prepare_corpus_file
 except ImportError:
 
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    almost_current = os.path.abspath(inspect.getfile(inspect.currentframe()))
+    currentdir = os.path.dirname(almost_current)
     parentdir = os.path.dirname(currentdir)
     sys.path.insert(0, parentdir)
-    from utils import prepare_corpus_folder
+    from utils import prepare_corpus_file
 
 
 class Gensim(WrapperModel):
 
-    def __init__(self, language):
+    def __init__(self,
+                 language,
+                 model_name,
+                 window_size,
+                 embedding_size,
+                 min_count=5,
+                 workers=4):
 
         self.language = language
+        self.model_name = model_name
+        self.embedding_size = embedding_size
+        self.window_size = window_size
+        self.min_count = min_count
+        self.workers = workers
 
-        self.size = 0
-
-        self.model_name = 'Gensim'
-
-    def train(self, path_to_corpus, prepare_corpus_func, **kwargs):
-
-        corpus = prepare_corpus_func(path_to_corpus)
-
-        # vector size
-        size = kwargs.get('size', 100)
-
-        self.size = size
-
-        window = kwargs.get('window', 5)
-        min_count = kwargs.get('min_count', 5)
-        workers = kwargs.get('workers', 4)
-
+    def train(self, path_to_corpus):
+        corpus = prepare_corpus_file(path_to_corpus)
         self.model = gensim.models.Word2Vec(corpus,
-                                            size=size,
-                                            window=window,
-                                            min_count=min_count,
-                                            workers=workers)
+                                            size=self.embedding_size,
+                                            window=self.window_size,
+                                            min_count=self.min_count,
+                                            workers=self.workers)
 
     def get_pickle(self):
 
-        '''
+        word2index = {word: index
+                      for index, word in enumerate(list(self.model.wv.vocab))}
+        new_dict = {'word2index': word2index,
+                    'embeddings': self.get_embeddings()}
 
-        Function that saves a pickle file with the following dict:
+        pickle_folder = os.path.join(os.getcwd(), "pickles")
+        if not os.path.exists(pickle_folder):
+            os.mkdir("pickles")
+        self.short_name = self.model_name + str(self.embedding_size)
+        name_piece = self.short_name + self.language + ".p"
+        file_name = os.path.join(pickle_folder, name_piece)
 
-
-
-        -- embeddings : the matrix of word embeddings
-
-        -- word2index : a dict of the form word : index.
-
-
-
-        '''
-
-        word2index = {word: index for index, word in enumerate(list(self.model.wv.vocab))}
-
-        # the following code creates the pickle
-        # folder if it doesn't exists already
-        # name of file will be in format model||wordvectorsize||corpuslanguage.p
-
-        name_piece = self.model_name + str(self.size) + self.language + ".p"
-        file_name = "pickles/" + name_piece
-
-        file = open(file_name, 'wb')
-
-        new_dict = {'word2index': word2index, 'embeddings': self.get_embeddings()}
-
-        pickle.dump(new_dict, file, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(file_name, 'wb') as pkl_file:
+            pickle.dump(new_dict, pkl_file)
+        return file_name
 
     def get_embeddings(self):
-
-        '''
-        Function that return embeddings generate by internal model
-
-
-        :rtype: np.array
-
-        '''
-
         return self.model[self.model.wv.vocab]
-
-
-if __name__ == "__main__":
-
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    parentdir = os.path.dirname(currentdir)
-
-    os.chdir(parentdir)
-
-    model = Gensim('english')
-
-    path = os.path.join(parentdir, 'corpora/toy-corpus-1')
-
-    func = prepare_corpus_folder
-    model.train(path, func)
-    model.get_pickle()
