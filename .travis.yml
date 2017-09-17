@@ -9,7 +9,6 @@ before_install:
 install:
   - pip3 install numpy
   - pip3 install gensim
-  - pip3 install google-compute-engine
   - pip3 install pandas
   - pip3 install tensorflow
   - pip3 install matplotlib
